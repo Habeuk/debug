@@ -1,0 +1,25 @@
+{
+    "name": "stephane888/debug",
+    "description": "debug php drupal",
+    "type": "library",    
+    "license": "MIT",
+    "version" : "0.1",
+    "authors": [
+        {
+            "name": "stephane888",
+            "email": "kksasteph888@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+"autoload" : {
+		"psr-4" : {
+			"Stephane888\\Debug\\" : "src/"
+		}
+	},
+"require" : {
+		"php" : "^7.0"
+	},
+    "require-dev": {
+        "kint-php/kint": "^3.3"
+    }
+}
