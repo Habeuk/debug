@@ -14,6 +14,13 @@ use Kint\Renderer\RichRenderer;
  * require_once __DIR__ . '/../vendor/kint-php/kint/src/CallFinder.php';
  * require_once __DIR__ . '/../vendor/kint-php/kint/src/Renderer/RichRenderer.php';
  * require_once __DIR__ . '/../vendor/kint-php/kint/src/Renderer/Renderer.php';
+ *
+ */
+/**
+ *
+ * @deprecated
+ * @author stephane
+ *
  */
 class DebugWbu {
 

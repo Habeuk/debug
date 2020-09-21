@@ -14,14 +14,21 @@ class debugLog {
    */
   public static $path = null;
 
+  /**
+   * default value 3
+   *
+   * @var integer
+   */
   public static $max_depth = 3;
 
   public static $auto = false;
 
   public static $use = null;
 
+  public static $forcePath = false;
+
   /**
-   * debug php files or save value on file.
+   * Debug php files or save value on file.
    *
    * @param mixed $data
    * @param string $filename
@@ -40,7 +47,7 @@ class debugLog {
     if (! empty(self::$path)) {
       $path_of_module = self::$path;
     }
-    if (defined('FULLROOT_WBU')) {
+    if (defined('FULLROOT_WBU') && ! self::$forcePath) {
       $path_of_module = FULLROOT_WBU . '/' . $path_of_module;
     } else {
       $path_of_module = '/' . $path_of_module;
@@ -48,7 +55,8 @@ class debugLog {
 
     if (! file_exists($path_of_module . '/files-log')) {
       echo ('dossier en cour de creation dans :' . $path_of_module);
-      if (mkdir($path_of_module . '/files-log', '0755', TRUE)) {
+      if (mkdir($path_of_module . '/files-log', 0755, TRUE)) {
+        chmod($path_of_module . '/files-log', 0755);
         echo (' Dossier OK ');
       } else {
         echo (' Echec creation dossier');
@@ -62,7 +70,13 @@ class debugLog {
     // Traitement des données.
     if ($use == 'file') {
       $result = $data;
-    } elseif ($use == 'log') {
+    } //
+    if ($use == 'json') {
+      $filename = $filename . '.json';
+      $result = $data;
+    } //
+
+    elseif ($use == 'log') {
       if (is_array($data) || is_object($data)) {
         ob_start();
         print_r($data);
@@ -88,11 +102,15 @@ class debugLog {
     fclose($monfichier);
   }
 
-  public static function kintDebugDrupal($data, $filename = 'debug', $path_of_module = null)
+  public static function kintDebugDrupal($data, $filename = 'debug', $path_of_module = null, $themeName = null)
   {
     if (empty($path_of_module)) {
-      $theme = \Drupal::theme()->getActiveTheme();
-      $path_of_module = DRUPAL_ROOT . '/' . $theme->getPath();
+      if ($themeName) {
+        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', $themeName);
+      } else {
+        $theme = \Drupal::theme()->getActiveTheme();
+        $path_of_module = DRUPAL_ROOT . '/' . $theme->getPath();
+      }
     }
     $use = 'kint';
     $auto = false;
@@ -103,6 +121,14 @@ class debugLog {
   {
     $use = 'log';
     $auto = false;
+    self::logs($data, $filename, $auto, $use, $path_of_module);
+  }
+
+  public static function saveJson(array $data, $filename = 'debug', $path_of_module = 'logs')
+  {
+    $use = 'json';
+    $auto = false;
+    $data = \json_encode($data);
     self::logs($data, $filename, $auto, $use, $path_of_module);
   }
 

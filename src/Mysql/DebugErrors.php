@@ -9,6 +9,8 @@ class DebugErrors {
 
   const codeDuplicate = 23000;
 
+  const codeDefaultValue = 'HY000';
+
   /**
    * Recherche une expression dans la chaine d'erreur.
    *
@@ -27,10 +29,17 @@ class DebugErrors {
 
   public function getCustomMessage()
   {
-    if ($this->codeError == self::codeDuplicate) {
-      return ErrorsMessages::$code_23000;
-    } else {
-      return ErrorsMessages::$code_empty;
+    switch ($this->codeError) {
+      case self::codeDuplicate:
+        return ErrorsMessages::$code_23000;
+        break;
+      case self::codeDefaultValue:
+        return ErrorsMessages::$code_HY000;
+        break;
+
+      default:
+        return ErrorsMessages::$code_empty;
+        break;
     }
   }
 }
