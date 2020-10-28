@@ -38,7 +38,7 @@ class DebugErrors {
         break;
 
       default:
-        return ErrorsMessages::$code_empty;
+        return ErrorsMessages::$code_empty . '. Mysql code : ' . $this->codeError;
         break;
     }
   }

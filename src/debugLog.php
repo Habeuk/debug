@@ -63,6 +63,7 @@ class debugLog {
       }
     }
     $filename = $path_of_module . '/files-log/' . $filename;
+
     if (! empty(self::$use)) {
       $use = self::$use;
     }
@@ -75,7 +76,6 @@ class debugLog {
       $filename = $filename . '.json';
       $result = $data;
     } //
-
     elseif ($use == 'log') {
       if (is_array($data) || is_object($data)) {
         ob_start();

@@ -20,7 +20,7 @@ class Utility {
       'file' => $e->getFile(),
       'line' => $e->getLine(),
       'previous' => $e->getPrevious(),
-      'trace' => $e->getTrace(),
+      'trace' => array_slice($e->getTrace(), 0, 3),
       'PHP_execution_error' => true
     ];
   }
@@ -40,7 +40,7 @@ class Utility {
       'file' => $e->getFile(),
       'line' => $e->getLine(),
       'previous' => $e->getPrevious(),
-      'trace' => $e->getTrace(),
+      'trace' => array_slice($e->getTrace(), 0, 3),
       'PHP_execution_error' => true
     ];
   }
