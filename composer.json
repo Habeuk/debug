@@ -3,7 +3,7 @@
     "description": "debug php drupal",
     "type": "library",    
     "license": "MIT",
-    "version" : "0.1",
+    "version" : "0.2",
     "authors": [
         {
             "name": "stephane888",
@@ -11,15 +11,15 @@
         }
     ],
     "minimum-stability": "stable",
-"autoload" : {
+    "autoload" : {
 		"psr-4" : {
 			"Stephane888\\Debug\\" : "src/"
 		}
 	},
-"require" : {
+  "require" : {
 		"php" : "^7.0"
 	},
     "require-dev": {
         "kint-php/kint": "^3.3"
-    }
+  }
 }

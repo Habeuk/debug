@@ -27,6 +27,12 @@ class debugLog {
 
   public static $forcePath = false;
 
+  public static $PositionAddLogAfter = true;
+
+  public static $masterFileName = null;
+
+  public static $themeName = null;
+
   /**
    * Debug php files or save value on file.
    *
@@ -40,7 +46,11 @@ class debugLog {
   {
     if (! $filename) {
       $filename = 'debug';
+      if (self::$masterFileName) {
+        $filename = self::$masterFileName;
+      }
     }
+
     if ($auto || self::$auto) {
       $filename = $filename . rand(1, 999);
     }
@@ -86,7 +96,15 @@ class debugLog {
       }
       $logs = PHP_EOL . PHP_EOL . 'Date : ' . date("d/m/Y  H:i:s") . '' . PHP_EOL;
       $result = $logs . $result;
-      $monfichier = fopen($filename, 'a+');
+      if (self::$PositionAddLogAfter) {
+        $monfichier = fopen($filename, "a+");
+      } else {
+        if (file_exists($filename)) {
+          $result .= file_get_contents($filename);
+        }
+        $monfichier = fopen($filename, "w");
+      }
+
       fputs($monfichier, $result);
       fclose($monfichier);
       return true;
@@ -102,17 +120,32 @@ class debugLog {
     fclose($monfichier);
   }
 
-  public static function kintDebugDrupal($data, $filename = 'debug', $path_of_module = null, $themeName = null)
+  public static function kintDebugDrupal($data, $filename = 'debug', $path_of_module = null)
   {
     if (empty($path_of_module)) {
-      if ($themeName) {
-        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', $themeName);
+      if (self::$themeName) {
+        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
       } else {
         $theme = \Drupal::theme()->getActiveTheme();
         $path_of_module = DRUPAL_ROOT . '/' . $theme->getPath();
       }
     }
     $use = 'kint';
+    $auto = false;
+    self::logs($data, $filename, $auto, $use, $path_of_module);
+  }
+
+  public static function SaveLogsDrupal($data, $filename = 'debug', $path_of_module = null)
+  {
+    if (empty($path_of_module)) {
+      if (self::$themeName) {
+        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+      } else {
+        $theme = \Drupal::theme()->getActiveTheme();
+        $path_of_module = DRUPAL_ROOT . '/' . $theme->getPath();
+      }
+    }
+    $use = 'log';
     $auto = false;
     self::logs($data, $filename, $auto, $use, $path_of_module);
   }

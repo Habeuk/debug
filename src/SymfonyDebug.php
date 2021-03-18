@@ -28,6 +28,7 @@ class SymfonyDebug extends debugLog {
     // debugLog::$path = "$webPath/var";
     $use = 'log';
     $auto = false;
+    self::$PositionAddLogAfter = false;
     self::logs($data, $filename, $auto, $use);
   }
 }
