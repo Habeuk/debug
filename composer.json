@@ -16,9 +16,7 @@
 		}
 	},
   "require" : {
-		"php" : "^7.0"
-	},
-    "require-dev": {
-        "kint-php/kint": "^3.3"
-  }
+		"php" : "^7.1",
+		"kint-php/kint": "^3.3"
+	}
 }
