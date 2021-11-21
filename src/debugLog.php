@@ -113,6 +113,8 @@ class debugLog
             $filename = $filename . '.html';
             ob_start();
             DebugWbu::kint_bug($data, self::$max_depth);
+            // DebugWbu::VarDumperBug($data);
+            // echo DebugWbu::CustomVarDumper($data);
             $result = ob_get_clean();
         }
 
