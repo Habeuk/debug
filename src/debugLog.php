@@ -37,7 +37,7 @@ class debugLog {
    * @param string $path_of_module
    * @param boolean $auto
    */
-  public static function logs($data, $filename = null, $auto = FALSE, $use = 'kint', $path_of_module = 'api/src/logs') {
+  public static function logs($data, $filename = null, $auto = FALSE, $use = 'kint', $path_of_module = 'logs') {
     if (!$filename) {
       $filename = 'debug';
       if (self::$masterFileName) {
@@ -78,7 +78,7 @@ class debugLog {
     if ($use == 'file') {
       $result = $data;
     } //
-    if ($use == 'json') {
+    elseif ($use == 'json') {
       $filename = $filename . '.json';
       $result = $data;
     } //
@@ -93,6 +93,7 @@ class debugLog {
       }
       $logs = PHP_EOL . PHP_EOL . 'Date : ' . date("d/m/Y  H:i:s") . '' . PHP_EOL;
       $result = $logs . $result;
+      
       if (self::$PositionAddLogAfter) {
         $monfichier = fopen($filename, "a+");
       }

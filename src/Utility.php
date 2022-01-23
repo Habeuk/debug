@@ -16,7 +16,7 @@ class Utility {
    *        pour limiter le nombre d'erreur à afficher.
    * @return boolean[]|NULL[]
    */
-  public static function errorMessage(Exception $e, $nbr_trace = 3) {
+  public static function errorMessage(Exception $e, int $nbr_trace = 3) {
     $er = [
       'message' => $e->getMessage(),
       'code' => $e->getCode(),
@@ -42,7 +42,7 @@ class Utility {
    *        pour limiter le nombre d'erreur à afficher.
    * @return boolean[]|NULL[]
    */
-  public static function errorError(\Error $e, $nbr_trace = 3) {
+  public static function errorError(\Error $e, int $nbr_trace = 3) {
     $er = [
       'message' => $e->getMessage(),
       'code' => $e->getCode(),
