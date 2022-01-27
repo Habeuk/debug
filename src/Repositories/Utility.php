@@ -21,8 +21,9 @@ class Utility {
      */
     elseif (!empty($_SERVER['DOCUMENT_ROOT'])) {
       $dossierName = explode("/", $_SERVER['DOCUMENT_ROOT']);
-      if (count($dossierName) > 2) {
-        return '/' . $dossierName['0'] . '/' . $dossierName['1'];
+      if (count($dossierName) > 3) {
+        // $dossierName['0'] is empty
+        return '/' . $dossierName['1'] . '/' . $dossierName['2'];
       }
     }
     throw new \Exception(" Impossible de determiner le dossier home ");
