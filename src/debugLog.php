@@ -36,6 +36,9 @@ class debugLog {
    * @param string $use
    * @param string $path_of_module
    * @param boolean $auto
+   *        genere un code aleatoire pour chaque fichier.
+   * @param boolean $usePath
+   *        true on utilise le chemain definie dans le path.
    */
   public static function logs($data, $filename = null, $auto = FALSE, $use = 'kint', $path_of_module = 'logs', $usePath = false) {
     if (!$filename) {
