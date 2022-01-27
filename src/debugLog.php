@@ -37,7 +37,7 @@ class debugLog {
    * @param string $path_of_module
    * @param boolean $auto
    */
-  public static function logs($data, $filename = null, $auto = FALSE, $use = 'kint', $path_of_module = 'logs') {
+  public static function logs($data, $filename = null, $auto = FALSE, $use = 'kint', $path_of_module = 'logs', $usePath = false) {
     if (!$filename) {
       $filename = 'debug';
       if (self::$masterFileName) {
@@ -51,10 +51,10 @@ class debugLog {
     if (!empty(self::$path)) {
       $path_of_module = self::$path;
     }
-    if (defined('FULLROOT_WBU') && !self::$forcePath) {
+    if (defined('FULLROOT_WBU') && !self::$forcePath && !$usePath) {
       $path_of_module = FULLROOT_WBU . '/' . $path_of_module;
     }
-    else {
+    elseif (!$usePath) {
       $path_of_module = '/' . $path_of_module;
     }
     
@@ -65,7 +65,7 @@ class debugLog {
         echo (' Dossier OK ');
       }
       else {
-        echo (' Echec creation dossier');
+        echo (' Echec creation dossier ');
       }
     }
     $filename = $path_of_module . '/files-log/' . $filename;
