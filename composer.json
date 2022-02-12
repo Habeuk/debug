@@ -17,6 +17,7 @@
 	},
   "require" : {
 		"php" : "^7.1",
-		"kint-php/kint": "^3.3"
+		"kint-php/kint": "^3.3",
+		"phpmailer/phpmailer": "^6.5"
 	}
 }
