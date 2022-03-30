@@ -161,16 +161,19 @@ class debugLog {
     }
     
     if (!file_exists($path_of_module . '/files-log')) {
-      if (self::$debug)
-        echo ('dossier en cour de creation dans :' . $path_of_module);
-      if (mkdir($path_of_module . '/files-log', 0755, TRUE)) {
-        chmod($path_of_module . '/files-log', 0755);
-        if (self::$debug)
-          echo (' Dossier OK ');
-      }
-      else {
-        if (self::$debug)
-          echo (' Echec creation dossier ');
+      if (self::$debug) {
+        try {
+          echo ('dossier en cour de creation dans :' . $path_of_module);
+          if (mkdir($path_of_module . '/files-log', 0755, TRUE)) {
+            chmod($path_of_module . '/files-log', 0755);
+            if (self::$debug)
+              echo (' Dossier OK ');
+          }
+        }
+        catch (\Exception $e) {
+          if (self::$debug)
+            echo (' Echec creation dossier ');
+        }
       }
     }
     $filename = $path_of_module . '/files-log/' . $filename;
@@ -199,18 +202,22 @@ class debugLog {
       $logs = PHP_EOL . PHP_EOL . 'Date : ' . date("d/m/Y  H:i:s") . '' . PHP_EOL;
       $result = $logs . $result;
       
-      if (self::$PositionAddLogAfter) {
-        $monfichier = fopen($filename, "a+");
-      }
-      else {
-        if (file_exists($filename)) {
-          $result .= file_get_contents($filename);
+      try {
+        if (self::$PositionAddLogAfter) {
+          $monfichier = fopen($filename, "a+");
         }
-        $monfichier = fopen($filename, "w");
+        else {
+          if (file_exists($filename)) {
+            $result .= file_get_contents($filename);
+          }
+          $monfichier = fopen($filename, "w");
+        }
+        fputs($monfichier, $result);
+        fclose($monfichier);
       }
-      
-      fputs($monfichier, $result);
-      fclose($monfichier);
+      catch (\Exception $e) {
+        //
+      }
       return true;
     }
     else {
