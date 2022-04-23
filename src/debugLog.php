@@ -65,7 +65,14 @@ class debugLog {
     if (!file_exists($path_of_module)) {
       if (self::$debug)
         echo ('dossier en cour de creation dans :' . $path_of_module);
-      if (mkdir($path_of_module, 0755, TRUE)) {
+      try {
+        $test_create = mkdir($path_of_module, 0755, TRUE);
+      }
+      catch (\Exception $e) {
+        return;
+      }
+      
+      if ($test_create) {
         chmod($path_of_module, 0755);
         if (self::$debug)
           echo (' Dossier OK ');
@@ -73,6 +80,7 @@ class debugLog {
       else {
         if (self::$debug)
           echo (' Echec creation dossier ');
+        return;
       }
     }
     $filename = $path_of_module . '/' . $filename;
