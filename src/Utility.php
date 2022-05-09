@@ -3,7 +3,6 @@
 namespace Stephane888\Debug;
 
 use Exception;
-use Leafo\ScssPhp\Node\Number;
 
 class Utility {
   
