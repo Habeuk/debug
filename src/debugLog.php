@@ -9,7 +9,7 @@ use Kint\Renderer\RichRenderer;
 class debugLog {
   
   /**
-   * le path doi etre relatif.
+   * le path doit etre relatif.
    *
    * @var string
    */
@@ -91,6 +91,9 @@ class debugLog {
     
     // Traitement des données.
     if ($use == 'file') {
+      if (is_array($data) || is_object($data)) {
+        $data = json_encode($data);
+      }
       $result = $data;
     } //
     elseif ($use == 'json') {
@@ -252,6 +255,19 @@ class debugLog {
       }
     }
     $use = 'kint';
+    self::logs($data, $filename, $auto, $use, $path_of_module);
+  }
+  
+  public static function DebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = null, $use = 'log') {
+    if (empty($path_of_module)) {
+      if (self::$themeName) {
+        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+      }
+      else {
+        $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+      }
+    }
     self::logs($data, $filename, $auto, $use, $path_of_module);
   }
   
