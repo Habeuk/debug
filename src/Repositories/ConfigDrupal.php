@@ -18,7 +18,7 @@ class ConfigDrupal {
    * par defaut.
    *
    * @param string $name
-   * @return NULL
+   * @return Array of config
    */
   static function config(string $name) {
     $conf = self::overrideConfig([
