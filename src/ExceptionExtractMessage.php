@@ -6,12 +6,10 @@ use Exception;
 
 /**
  *
- * @deprecated remove before 2x, because name "Utility" is not good. use
- *             ExceptionExtractMessage
  * @author stephane
  *        
  */
-class Utility {
+class ExceptionExtractMessage {
   
   /**
    * Traite les message d'erreus lié à \Exception .
@@ -73,7 +71,7 @@ class Utility {
    * @param Exception $e
    * @param Number $nbr_trace
    *        pour limiter le nombre d'erreur à afficher.
-   * @return boolean[]|NULL[]
+   * @return [] contenant les informations liées à l'erreur.
    */
   public static function errorAll(\Throwable $e, int $nbr_trace = 3) {
     $er = [

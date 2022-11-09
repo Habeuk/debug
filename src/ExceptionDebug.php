@@ -7,11 +7,9 @@ use LogicException;
 /**
  *
  * @author stephane
- * @deprecated remove before 2x, because name "DebugCode" is not good. use
- *             ExceptionDebug
- *            
+ *        
  */
-class DebugCode extends LogicException implements \Throwable {
+class ExceptionDebug extends LogicException implements \Throwable {
   protected $content;
   
   /**
