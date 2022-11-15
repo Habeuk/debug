@@ -24,7 +24,7 @@ class ExceptionDebug extends LogicException implements \Throwable {
     parent::__construct($message, $code, $previous);
   }
   
-  function getdbgToDebug() {
+  function getContentToDebug() {
     return $this->dbg;
   }
   
