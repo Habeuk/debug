@@ -10,28 +10,40 @@ use LogicException;
  *        
  */
 class ExceptionDebug extends LogicException implements \Throwable {
-  protected $content;
+  protected $dbg;
   
   /**
    *
    * @param string $message
    * @param int $code
    * @param mixed $previous
-   * @param mixed $content
+   * @param mixed $dbg
    */
-  function __construct($message = null, $content = null, $code = null, $previous = null) {
-    $this->content = $content;
+  function __construct($message = null, $dbg = null, $code = null, $previous = null) {
+    $this->dbg = $dbg;
     parent::__construct($message, $code, $previous);
   }
   
-  function getContentToDebug() {
-    return $this->content;
+  function getdbgToDebug() {
+    return $this->dbg;
   }
   
   function setContentToDebug($dbg) {
-    $this->content = $dbg;
+    $this->dbg = $dbg;
   }
   
+  public function setErrors(array $errors) {
+    $this->setContentToDebug($errors);
+  }
+  
+  public function getErrors() {
+    return $this->dbg;
+  }
+  
+  /**
+   *
+   * @deprecated
+   */
   function getError() {
     return $this->getMessage();
   }
