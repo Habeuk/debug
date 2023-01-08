@@ -60,6 +60,7 @@ class debugLog {
     }
     elseif (!$usePath) {
       $path_of_module = '/' . $path_of_module;
+      $path_of_module = str_replace("//", "/", $path_of_module);
     }
     
     if (!file_exists($path_of_module)) {
@@ -83,6 +84,7 @@ class debugLog {
         return;
       }
     }
+    
     $filename = $path_of_module . '/' . $filename;
     
     if (!empty(self::$use)) {
@@ -126,6 +128,12 @@ class debugLog {
       fclose($monfichier);
       return true;
     }
+    //
+    elseif ($use == 'symfony') {
+      $filename = $filename . '.html';
+      $result = DebugWbu::Dumper3($data);
+    }
+    // use 'kint'
     else {
       $filename = $filename . '.html';
       ob_start();
@@ -141,7 +149,7 @@ class debugLog {
   
   /**
    *
-   * @deprecated
+   * @deprecated use logger
    * @param mixed $data
    * @param string $filename
    * @param boolean $auto
@@ -256,6 +264,26 @@ class debugLog {
     }
     $use = 'kint';
     self::logs($data, $filename, $auto, $use, $path_of_module);
+  }
+  
+  /**
+   * Methode de debugage inspirer de symfony.
+   */
+  public static function symfonyDebug($data, $filename = 'debug', $auto = false, $path_of_module = null) {
+    if (empty($path_of_module)) {
+      if (self::$themeName) {
+        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+      }
+      else {
+        $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+      }
+    }
+    $path_of_module = $path_of_module . "/files-log";
+    $use = 'symfony';
+    // $use = 'kint';
+    $usePath = false;
+    self::logger($data, $filename, $auto, $use, $path_of_module, $usePath);
   }
   
   public static function DebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = null, $use = 'log') {

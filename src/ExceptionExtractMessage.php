@@ -100,7 +100,7 @@ class ExceptionExtractMessage {
     $error .= $e->getPrevious();
     foreach (array_slice($e->getTrace(), 0, $nbr_trace) as $value) {
       $error .= '<br>';
-      if (!is_array($value))
+      if (!is_array($value) && !is_object($value))
         $error .= $value;
     }
     return $error;
