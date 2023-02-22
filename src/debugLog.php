@@ -123,8 +123,8 @@ class debugLog {
         }
         $monfichier = fopen($filename, "w");
       }
-      
-      fputs($monfichier, $result);
+      if ($result !== Null)
+        fputs($monfichier, $result);
       fclose($monfichier);
       return true;
     }
@@ -143,8 +143,14 @@ class debugLog {
     }
     
     $monfichier = fopen($filename, 'w+');
-    fputs($monfichier, $result);
-    fclose($monfichier);
+    if ($monfichier) {
+      if ($result !== Null)
+        fwrite($monfichier, $result);
+      fclose($monfichier);
+    }
+    else {
+      echo "file not writable : " . $filename . '<br>';
+    }
   }
   
   /**
@@ -231,7 +237,8 @@ class debugLog {
           }
           $monfichier = fopen($filename, "w");
         }
-        fputs($monfichier, $result);
+        if ($result !== Null)
+          fputs($monfichier, $result);
         fclose($monfichier);
       }
       catch (\Exception $e) {
@@ -248,7 +255,8 @@ class debugLog {
     }
     
     $monfichier = fopen($filename, 'w+');
-    fputs($monfichier, $result);
+    if ($result !== NULL)
+      fputs($monfichier, $result);
     fclose($monfichier);
   }
   
