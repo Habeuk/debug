@@ -123,7 +123,7 @@ class debugLog {
         }
         $monfichier = fopen($filename, "w");
       }
-      if ($result !== Null)
+      if ($result !== Null && $monfichier)
         fputs($monfichier, $result);
       fclose($monfichier);
       return true;
@@ -144,7 +144,7 @@ class debugLog {
     
     $monfichier = fopen($filename, 'w+');
     if ($monfichier) {
-      if ($result !== Null)
+      if ($result !== Null && $monfichier)
         fwrite($monfichier, $result);
       fclose($monfichier);
     }
@@ -237,7 +237,8 @@ class debugLog {
           }
           $monfichier = fopen($filename, "w");
         }
-        if ($result !== Null)
+        if ($result !== Null && $monfichier)
+          
           fputs($monfichier, $result);
         fclose($monfichier);
       }
@@ -255,7 +256,7 @@ class debugLog {
     }
     
     $monfichier = fopen($filename, 'w+');
-    if ($result !== NULL)
+    if ($result !== NULL && $monfichier)
       fputs($monfichier, $result);
     fclose($monfichier);
   }
