@@ -7,11 +7,11 @@ use LogicException;
 /**
  *
  * @author stephane
- *        
+ *
  */
 class ExceptionDebug extends LogicException implements \Throwable {
   protected $dbg;
-  
+
   /**
    *
    * @param string $message
@@ -23,39 +23,31 @@ class ExceptionDebug extends LogicException implements \Throwable {
     $this->dbg = $dbg;
     parent::__construct($message, $code, $previous);
   }
-  
+
   function getContentToDebug() {
     return $this->dbg;
   }
-  
+
   function setContentToDebug($dbg) {
     $this->dbg = $dbg;
   }
-  
+
   public function setErrors(array $errors) {
     $this->setContentToDebug($errors);
   }
-  
+
   public function getErrors() {
     return $this->dbg;
   }
-  
-  /**
-   *
-   * @deprecated
-   */
-  function getError() {
-    return $this->getMessage();
-  }
-  
+
   function getErrorCode() {
     if (empty($this->getCode()))
       return 431;
     return $this->getCode();
   }
-  
+
   static public function exception($message, $dbg) {
     return new self($message, $dbg);
   }
-  
+
 }
