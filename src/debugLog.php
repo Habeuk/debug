@@ -123,9 +123,11 @@ class debugLog {
         }
         $monfichier = fopen($filename, "w");
       }
-      if ($result !== Null && $monfichier)
+      if ($result !== Null && $monfichier) {
         fputs($monfichier, $result);
-      fclose($monfichier);
+        fclose($monfichier);
+      }
+      
       return true;
     }
     //
@@ -144,9 +146,10 @@ class debugLog {
     
     $monfichier = fopen($filename, 'w+');
     if ($monfichier) {
-      if ($result !== Null && $monfichier)
+      if ($result !== Null && $monfichier) {
         fwrite($monfichier, $result);
-      fclose($monfichier);
+        fclose($monfichier);
+      }
     }
     else {
       echo "file not writable : " . $filename . '<br>';
@@ -237,10 +240,10 @@ class debugLog {
           }
           $monfichier = fopen($filename, "w");
         }
-        if ($result !== Null && $monfichier)
-          
+        if ($result !== Null && $monfichier) {
           fputs($monfichier, $result);
-        fclose($monfichier);
+          fclose($monfichier);
+        }
       }
       catch (\Exception $e) {
         //
@@ -256,9 +259,10 @@ class debugLog {
     }
     
     $monfichier = fopen($filename, 'w+');
-    if ($result !== NULL && $monfichier)
+    if ($result !== NULL && $monfichier) {
       fputs($monfichier, $result);
-    fclose($monfichier);
+      fclose($monfichier);
+    }
   }
   
   public static function kintDebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = null) {

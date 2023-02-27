@@ -7,7 +7,8 @@ use LogicException;
 /**
  *
  * @author stephane
- * @deprecated remove before 2x, because name "DebugCode" is not good. use
+ * @deprecated remove before 2x, because name "DebugCode" is not expressive or
+ *             create confusion. use
  *             ExceptionDebug
  *            
  */

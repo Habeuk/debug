@@ -17,9 +17,7 @@
 	},
   "require" : {
 		"phpmailer/phpmailer": "^6.5",
-		"symfony/stopwatch": "^6.2"
-	},
- "require-dev" : {
-		"kint-php/kint": "^3.3"
+		"symfony/stopwatch": "^6.2",
+		"kint-php/kint": "^5.0"
 	}
 }
