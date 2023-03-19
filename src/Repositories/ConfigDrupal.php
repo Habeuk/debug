@@ -14,6 +14,37 @@ namespace Stephane888\Debug\Repositories;
 class ConfigDrupal {
   
   /**
+   * Permet de rechercher les configuration en relation avec un terme.
+   * Par defaut on fait la recherche sur la colonne "name", mais cela peut etre
+   * necessaire de l'effectuer aussi dans data. Mais cdans ce cas il faut faire
+   * attention au risque de tout casser.
+   *
+   *
+   * @param string $name
+   */
+  static function searchConfigByWord(string $word, $full = false) {
+    /**
+     *
+     * @var \Drupal\Core\Database\Connection $database
+     * @see https://www.drupal.org/docs/8/api/database-api/dynamic-queries/introduction-to-dynamic-queries
+     */
+    $database = \Drupal::database();
+    $configTable = $database->select('config', 'cf');
+    $configTable->fields('cf', []);
+    if ($full) {
+      $orGroupe = $configTable->orConditionGroup();
+      $orGroupe->condition('name', '%' . $database->escapeLike($word) . '%', "LIKE");
+      $orGroupe->condition('data', '%' . $database->escapeLike($word) . '%', "LIKE");
+      $configTable->condition($orGroupe);
+    }
+    else {
+      $configTable->condition('name', '%' . $database->escapeLike($word) . '%', "LIKE");
+    }
+    // $configTable->condition('name', $word);
+    return $configTable->execute()->fetchAll(\PDO::FETCH_ASSOC);
+  }
+  
+  /**
    * Retourne la configuration surcharger par domain_config ou la configuration
    * par defaut.
    *
