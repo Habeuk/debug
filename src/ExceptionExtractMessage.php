@@ -21,7 +21,7 @@ class ExceptionExtractMessage {
    * @return boolean[]|NULL[]
    *
    */
-  public static function errorMessage(Exception $e, int $nbr_trace = 3) {
+  public static function errorMessage(Exception $e, int $nbr_trace = 7) {
     $er = [
       'message' => $e->getMessage(),
       'code' => $e->getCode(),
@@ -47,7 +47,7 @@ class ExceptionExtractMessage {
    *        pour limiter le nombre d'erreur à afficher.
    * @return boolean[]|NULL[]
    */
-  public static function errorError(\Error $e, int $nbr_trace = 3) {
+  public static function errorError(\Error $e, int $nbr_trace = 7) {
     $er = [
       'message' => $e->getMessage(),
       'code' => $e->getCode(),
@@ -73,7 +73,7 @@ class ExceptionExtractMessage {
    *        pour limiter le nombre d'erreur à afficher.
    * @return [] contenant les informations liées à l'erreur.
    */
-  public static function errorAll(\Throwable $e, int $nbr_trace = 3) {
+  public static function errorAll(\Throwable $e, int $nbr_trace = 7) {
     $er = [
       'message' => $e->getMessage(),
       'code' => $e->getCode(),
@@ -86,7 +86,7 @@ class ExceptionExtractMessage {
     return $er;
   }
   
-  public static function errorAllToString(\Throwable $e, int $nbr_trace = 3) {
+  public static function errorAllToString(\Throwable $e, int $nbr_trace = 7) {
     $error = '';
     $error .= '<br>';
     $error .= $e->getMessage();
