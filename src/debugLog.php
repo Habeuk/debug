@@ -161,7 +161,7 @@ class debugLog {
    * @param string $path_of_module
    *        Un chemin relatif serra dans le theme ou un chemin absolute
    */
-  public static function kintDebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = null) {
+  public static function kintDebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
         $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
@@ -184,7 +184,7 @@ class debugLog {
   /**
    * Methode de debugage inspirer de symfony.
    */
-  public static function symfonyDebug($data, $filename = 'debug', $auto = false, $path_of_module = null) {
+  public static function symfonyDebug($data, $filename = 'debug', $auto = false, $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
         $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
