@@ -13,14 +13,19 @@ class ExceptionDebug extends LogicException implements \Throwable {
   protected $dbg;
 
   /**
+   * L'ide est de sauvegarder les informations de debug ($dbg) dans le fichier
+   * de log par defaut.
    *
    * @param string $message
    * @param int $code
+   *        On s'inpire de des codes d'erreurs de monolog. @see
+   *        https://github.com/Seldaek/monolog/blob/2.x/doc/01-usage.md#log-levels
    * @param mixed $previous
    * @param mixed $dbg
    */
-  function __construct($message = null, $dbg = null, $code = null, $previous = null) {
+  function __construct($message = null, $dbg = null, $code = 100, $previous = null) {
     $this->dbg = $dbg;
+    $message = $message . '\n hkkj kkkkkkkkkkkkkkkkkkkk ';
     parent::__construct($message, $code, $previous);
   }
 
