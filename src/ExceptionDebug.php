@@ -5,6 +5,8 @@ namespace Stephane888\Debug;
 use LogicException;
 
 /**
+ * Permet de sauvegarder le contenus de la variables $dbg dans les messages de
+ * debocage par defaut.
  *
  * @author stephane
  *
@@ -25,7 +27,7 @@ class ExceptionDebug extends LogicException implements \Throwable {
    */
   function __construct($message = null, $dbg = null, $code = 100, $previous = null) {
     $this->dbg = $dbg;
-    $message = $message . '\n hkkj kkkkkkkkkkkkkkkkkkkk ';
+    $message = $message . ' || @debug ' . json_encode($dbg);
     parent::__construct($message, $code, $previous);
   }
 
