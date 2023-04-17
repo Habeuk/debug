@@ -201,7 +201,7 @@ class debugLog {
     self::logger($data, $filename, $auto, $use, $path_of_module, $usePath);
   }
   
-  public static function DebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = null, $use = 'log') {
+  public static function DebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = 'logs', $use = 'log') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
         $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
@@ -211,10 +211,16 @@ class debugLog {
         $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
       }
     }
+    else {
+      if ($path_of_module[0] != "/") {
+        $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+      }
+    }
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
   
-  public static function SaveLogsDrupal($data, $filename = 'debug', $path_of_module = null) {
+  public static function SaveLogsDrupal($data, $filename = 'debug', $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
         $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
@@ -222,6 +228,12 @@ class debugLog {
       else {
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
         $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+      }
+    }
+    else {
+      if ($path_of_module[0] != "/") {
+        $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
       }
     }
     \Drupal::messenger()->addStatus(' path : ' . $path_of_module);
