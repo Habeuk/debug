@@ -42,7 +42,7 @@ class debugLog {
    * @param boolean $usePath
    *        true on utilise le chemain definie dans le path.
    */
-  public static function logger($data, $filename = null, $auto = FALSE, $use = 'kint', $path_of_module = 'logs', $usePath = false) {
+  public static function logger($data, $filename = null, $auto = FALSE, $use = 'kint', string $path_of_module = 'logs', $usePath = false) {
     if (!$filename) {
       $filename = 'debug';
       if (self::$masterFileName) {
@@ -65,6 +65,7 @@ class debugLog {
     }
     
     if (!file_exists($path_of_module)) {
+      
       if (self::$debug)
         echo (' Dossier en cour de creation dans :' . $path_of_module);
       try {
@@ -161,20 +162,31 @@ class debugLog {
    * @param string $path_of_module
    *        Un chemin relatif serra dans le theme ou un chemin absolute
    */
-  public static function kintDebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = 'logs') {
+  public static function kintDebugDrupal($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs') {
     if (empty($path_of_module)) {
-      if (self::$themeName) {
-        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
-      }
-      else {
-        $defaultThemeName = \Drupal::config('system.theme')->get('default');
-        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+      // si on est dans un environnement drupal, on renvoit cela dans le theme
+      // encours.
+      if (defined('DRUPAL_ROOT')) {
+        if (self::$themeName) {
+          $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+        }
+        else {
+          $defaultThemeName = \Drupal::config('system.theme')->get('default');
+          $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+        }
       }
     }
     else {
-      if ($path_of_module[0] != "/") {
-        $defaultThemeName = \Drupal::config('system.theme')->get('default');
-        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+      // si on est dans un environnement drupal, on renvoit cela dans le theme
+      // encours.
+      if (defined('DRUPAL_ROOT')) {
+        if (self::$themeName) {
+          $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName) . "/" . $path_of_module;
+        }
+        else {
+          $defaultThemeName = \Drupal::config('system.theme')->get('default');
+          $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+        }
       }
     }
     $use = 'kint';
@@ -184,7 +196,7 @@ class debugLog {
   /**
    * Methode de debugage inspirer de symfony.
    */
-  public static function symfonyDebug($data, $filename = 'debug', $auto = false, $path_of_module = 'logs') {
+  public static function symfonyDebug($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
         $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
@@ -194,14 +206,13 @@ class debugLog {
         $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
       }
     }
-    $path_of_module = $path_of_module . "/files-log";
     $use = 'symfony';
     // $use = 'kint';
     $usePath = false;
     self::logger($data, $filename, $auto, $use, $path_of_module, $usePath);
   }
   
-  public static function DebugDrupal($data, $filename = 'debug', $auto = false, $path_of_module = 'logs', $use = 'log') {
+  public static function DebugDrupal($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs', $use = 'log') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
         $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
@@ -220,7 +231,7 @@ class debugLog {
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
   
-  public static function SaveLogsDrupal($data, $filename = 'debug', $path_of_module = 'logs') {
+  public static function SaveLogsDrupal($data, $filename = 'debug', string $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
         $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
@@ -231,24 +242,27 @@ class debugLog {
       }
     }
     else {
-      if ($path_of_module[0] != "/") {
-        $defaultThemeName = \Drupal::config('system.theme')->get('default');
-        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+      // si on est dans un environnement drupal, on renvoit cela dans le theme
+      // encours.
+      if (defined('DRUPAL_ROOT')) {
+        if ($path_of_module[0] != "/") {
+          $defaultThemeName = \Drupal::config('system.theme')->get('default');
+          $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+        }
       }
     }
-    \Drupal::messenger()->addStatus(' path : ' . $path_of_module);
     $use = 'log';
     $auto = false;
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
   
-  public static function saveLogs($data, $filename = 'debug', $path_of_module = 'logs') {
+  public static function saveLogs($data, $filename = 'debug', string $path_of_module = 'logs') {
     $use = 'log';
     $auto = false;
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
   
-  public static function saveJson(array $data, $filename = 'debug', $path_of_module = 'logs') {
+  public static function saveJson(array $data, $filename = 'debug', string $path_of_module = 'logs') {
     $use = 'json';
     $auto = false;
     $data = \json_encode($data);
