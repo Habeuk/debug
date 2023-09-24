@@ -5,7 +5,6 @@ namespace Stephane888\Debug;
 use Kint\kint;
 use kint\Utils;
 use Kint\Renderer\RichRenderer;
-use Drupal\views\Plugin\views\field\Boolean;
 
 class debugLog {
   
@@ -29,6 +28,11 @@ class debugLog {
   public static $masterFileName = null;
   public static $themeName = null;
   public static $debug = true;
+  /**
+   *
+   * @var \Drupal\Core\Extension\ExtensionPathResolver
+   */
+  protected static $pathResolver;
   
   /**
    * Debug php files or save value on file.
@@ -168,11 +172,11 @@ class debugLog {
       // encours.
       if (defined('DRUPAL_ROOT')) {
         if (self::$themeName) {
-          $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+          $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
         }
         else {
           $defaultThemeName = \Drupal::config('system.theme')->get('default');
-          $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+          $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
         }
       }
     }
@@ -181,11 +185,11 @@ class debugLog {
       // encours.
       if (defined('DRUPAL_ROOT')) {
         if (self::$themeName) {
-          $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName) . "/" . $path_of_module;
+          $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName) . "/" . $path_of_module;
         }
         else {
           $defaultThemeName = \Drupal::config('system.theme')->get('default');
-          $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+          $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
         }
       }
     }
@@ -194,16 +198,18 @@ class debugLog {
   }
   
   /**
-   * Methode de debugage inspirer de symfony.
+   * Methode de debogage inspirer de symfony.
+   * Cette approche n'affiche pas le bloc des methodes, classes en relations
+   * avec l'object.
    */
   public static function symfonyDebug($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs') {
-    if (empty($path_of_module)) {
+    if (defined('DRUPAL_ROOT')) {
       if (self::$themeName) {
-        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName) . "/" . $path_of_module;
       }
       else {
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
-        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
       }
     }
     $use = 'symfony';
@@ -215,17 +221,17 @@ class debugLog {
   public static function DebugDrupal($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs', $use = 'log') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
-        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
       }
       else {
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
-        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
       }
     }
     else {
       if ($path_of_module[0] != "/") {
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
-        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
       }
     }
     self::logger($data, $filename, $auto, $use, $path_of_module);
@@ -234,11 +240,11 @@ class debugLog {
   public static function SaveLogsDrupal($data, $filename = 'debug', string $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
-        $path_of_module = DRUPAL_ROOT . '/' . \drupal_get_path('theme', self::$themeName);
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
       }
       else {
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
-        $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName);
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
       }
     }
     else {
@@ -247,7 +253,7 @@ class debugLog {
       if (defined('DRUPAL_ROOT')) {
         if ($path_of_module[0] != "/") {
           $defaultThemeName = \Drupal::config('system.theme')->get('default');
-          $path_of_module = DRUPAL_ROOT . '/' . drupal_get_path('theme', $defaultThemeName) . "/" . $path_of_module;
+          $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
         }
       }
     }
@@ -295,6 +301,13 @@ class debugLog {
     $monfichier = fopen($filename, 'w+');
     fputs($monfichier, $data);
     fclose($monfichier);
+  }
+  
+  public static function getPath($type, $name) {
+    if (!self::$pathResolver) {
+      self::$pathResolver = \Drupal::service('extension.path.resolver');
+    }
+    return self::$pathResolver->getPath($type, $name);
   }
   
 }

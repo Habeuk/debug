@@ -26,11 +26,21 @@ use Symfony\Component\VarDumper\VarDumper;
 /**
  *
  * @author stephane
- *
+ *        
  */
 class DebugWbu {
-
+  
   public static function kint_bug($logs = '', $max_depth = 3) {
+    RichRenderer::$theme = 'aante-light.css';
+    RichRenderer::$always_pre_render = true;
+    RichRenderer::$needs_pre_render = true;
+    kint::$depth_limit = $max_depth;
+    kint::dump($logs);
+    // $statics = kint::getStatics();
+    // kint::createFromStatics($statics);
+  }
+  
+  public static function kint_bugOld($logs = '', $max_depth = 3) {
     RichRenderer::$theme = __DIR__ . '/../assets/aante-light-custom.css';
     RichRenderer::$always_pre_render = true;
     RichRenderer::$needs_pre_render = true;
@@ -39,11 +49,11 @@ class DebugWbu {
     // $statics = kint::getStatics();
     // kint::createFromStatics($statics);
   }
-
+  
   public static function VarDumperBug($var = '') {
     VarDumper::dump($var);
   }
-
+  
   /**
    *
    * @see https://symfony.com/doc/current/components/var_dumper/advanced.html
@@ -56,13 +66,13 @@ class DebugWbu {
       $dumper->dump($cloner->cloneVar($var));
     });
   }
-
+  
   public static function Dumper2($variable) {
     $cloner = new VarCloner();
     $dumper = new CliDumper();
     return $dumper->dump($cloner->cloneVar($variable), true);
   }
-
+  
   /**
    *
    * @param mixed $variable
@@ -76,5 +86,5 @@ class DebugWbu {
       'maxStringLength' => $maxStringLength
     ]);
   }
-
+  
 }
