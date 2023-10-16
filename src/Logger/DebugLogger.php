@@ -93,7 +93,7 @@ class DebugLogger implements DebugLoggerInterface
             throw new Exception("SENDER env variable must be define", 1);
         }
 
-        $smtpSettings = DebugLoggerInterface::$smtpSettings;
+        $smtpSettings = DebugLogger::$smtpSettings;
 
         $phpmailer = new PHPMailer();
         $phpmailer->isSMTP();
@@ -133,7 +133,7 @@ class DebugLogger implements DebugLoggerInterface
             throw new Exception("SENDER env variable must be define", 1);
         }
 
-        $smtpSettings = DebugLoggerInterface::$smtpSettings;
+        $smtpSettings = DebugLogger::$smtpSettings;
 
         $phpmailer = new PHPMailer();
         $phpmailer->isSMTP();
@@ -173,7 +173,7 @@ class DebugLogger implements DebugLoggerInterface
             throw new Exception("SENDER env variable must be define", 1);
         }
 
-        $smtpSettings = DebugLoggerInterface::$smtpSettings;
+        $smtpSettings = DebugLogger::$smtpSettings;
 
         $phpmailer = new PHPMailer();
         $phpmailer->isSMTP();
@@ -213,7 +213,7 @@ class DebugLogger implements DebugLoggerInterface
             throw new Exception("SENDER env variable must be define", 1);
         }
 
-        $smtpSettings = DebugLoggerInterface::$smtpSettings;
+        $smtpSettings = DebugLogger::$smtpSettings;
 
         $phpmailer = new PHPMailer();
         $phpmailer->isSMTP();
@@ -253,7 +253,7 @@ class DebugLogger implements DebugLoggerInterface
             throw new Exception("SENDER env variable must be define", 1);
         }
 
-        $smtpSettings = DebugLoggerInterface::$smtpSettings;
+        $smtpSettings = DebugLogger::$smtpSettings;
 
         $phpmailer = new PHPMailer();
         $phpmailer->isSMTP();
@@ -285,8 +285,8 @@ class DebugLogger implements DebugLoggerInterface
      */
     protected function getFileDir(): string
     {
-        if (DebugLoggerInterface::$logDir != '') {
-            return DebugLoggerInterface::$logDir;
+        if (DebugLogger::$logDir != '') {
+            return DebugLogger::$logDir;
         }
         return dirname(__FILE__, 3) . '/logs';
     }
