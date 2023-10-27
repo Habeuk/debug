@@ -19,6 +19,7 @@ composer require habeuk/debug
 
 You have to setup smtp parameters if you want to send logs by mail
 
+```
 DebugLogger::$smtpSettings['host'] = '';
 DebugLogger::$smtpSettings['sender'] = "";
 DebugLogger::$smtpSettings['sender_name'] = '';
@@ -27,3 +28,4 @@ DebugLogger::$smtpSettings['user_name'] = "";
 DebugLogger::$smtpSettings['password'] = "";
 DebugLogger::$smtpSettings['recipients'] = ['email1', 'email2']
 DebugLogger::$logDir = "log path"; // The path where you want to save the log files
+```
