@@ -234,7 +234,6 @@ class DebugLogger implements DebugLoggerInterface {
     foreach ($smtpSettings['recipients'] as $recipient) {
       $phpmailer->addAddress($recipient);
     }
-    
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
@@ -251,7 +250,6 @@ class DebugLogger implements DebugLoggerInterface {
    * Return the log directory.
    */
   protected function getFileDir(): string {
-    dump('getFileDir');
     if (DebugLogger::$logDir != '') {
       return DebugLogger::$logDir;
     }
