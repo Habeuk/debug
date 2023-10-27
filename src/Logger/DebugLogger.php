@@ -85,13 +85,6 @@ class DebugLogger implements DebugLoggerInterface
      */
     public function warning($message, array $contenData = [], $fileName = "warning"): void
     {
-        if (!key_exists("RECIPIENTS", $_ENV)) {
-            throw new Exception("RECIPIENTS env variable must be define", 1);
-        }
-
-        if (!key_exists("SENDER", $_ENV)) {
-            throw new Exception("SENDER env variable must be define", 1);
-        }
 
         $smtpSettings = DebugLogger::$smtpSettings;
 
@@ -125,13 +118,6 @@ class DebugLogger implements DebugLoggerInterface
      */
     public function error($message, array $contenData = [], $fileName = "error"): void
     {
-        if (!key_exists("RECIPIENTS", $_ENV)) {
-            throw new Exception("RECIPIENTS env variable must be define", 1);
-        }
-
-        if (!key_exists("SENDER", $_ENV)) {
-            throw new Exception("SENDER env variable must be define", 1);
-        }
 
         $smtpSettings = DebugLogger::$smtpSettings;
 
@@ -165,13 +151,6 @@ class DebugLogger implements DebugLoggerInterface
      */
     public function critical($message, array $contenData = [], $fileName = "critical"): void
     {
-        if (!key_exists("RECIPIENTS", $_ENV)) {
-            throw new Exception("RECIPIENTS env variable must be define", 1);
-        }
-
-        if (!key_exists("SENDER", $_ENV)) {
-            throw new Exception("SENDER env variable must be define", 1);
-        }
 
         $smtpSettings = DebugLogger::$smtpSettings;
 
@@ -205,13 +184,6 @@ class DebugLogger implements DebugLoggerInterface
      */
     public function alert($message, array $contenData = [], $fileName = "alert"): void
     {
-        if (!key_exists("RECIPIENTS", $_ENV)) {
-            throw new Exception("RECIPIENTS env variable must be define", 1);
-        }
-
-        if (!key_exists("SENDER", $_ENV)) {
-            throw new Exception("SENDER env variable must be define", 1);
-        }
 
         $smtpSettings = DebugLogger::$smtpSettings;
 
@@ -245,13 +217,6 @@ class DebugLogger implements DebugLoggerInterface
      */
     public function emergency($message, array $contenData = [], $fileName = "emergency"): void
     {
-        if (!key_exists("RECIPIENTS", $_ENV)) {
-            throw new Exception("RECIPIENTS env variable must be define", 1);
-        }
-
-        if (!key_exists("SENDER", $_ENV)) {
-            throw new Exception("SENDER env variable must be define", 1);
-        }
 
         $smtpSettings = DebugLogger::$smtpSettings;
 
