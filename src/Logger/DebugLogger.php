@@ -82,8 +82,6 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function warning($message, array $contenData = [], $fileName = "warning"): void {
-   
-    
     $smtpSettings = DebugLogger::$smtpSettings;
     
     $phpmailer = new PHPMailer();
@@ -116,10 +114,7 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function error($message, array $contenData = [], $fileName = "error"): void {
-   
-    
     $smtpSettings = DebugLogger::$smtpSettings;
-    
     $phpmailer = new PHPMailer();
     $phpmailer->isSMTP();
     $phpmailer->Host = $smtpSettings['host'];
@@ -127,19 +122,15 @@ class DebugLogger implements DebugLoggerInterface {
     $phpmailer->Port = $smtpSettings['port'];
     $phpmailer->Username = $smtpSettings['user_name'];
     $phpmailer->Password = $smtpSettings['password'];
-    
     $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
     foreach ($smtpSettings['recipients'] as $recipient) {
       $phpmailer->addAddress($recipient);
     }
-    
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
-    
     $handler = new PHPMailerHandler($phpmailer);
     $handler->setFormatter(new HtmlFormatter());
-    
     $this->logger->pushHandler($handler);
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
     $this->logger->error($message, $contenData);
@@ -150,8 +141,6 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function critical($message, array $contenData = [], $fileName = "critical"): void {
-   
-    
     $smtpSettings = DebugLogger::$smtpSettings;
     
     $phpmailer = new PHPMailer();
@@ -184,8 +173,6 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function alert($message, array $contenData = [], $fileName = "alert"): void {
-   
-    
     $smtpSettings = DebugLogger::$smtpSettings;
     
     $phpmailer = new PHPMailer();
@@ -218,8 +205,6 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function emergency($message, array $contenData = [], $fileName = "emergency"): void {
-   
-    
     $smtpSettings = DebugLogger::$smtpSettings;
     
     $phpmailer = new PHPMailer();
