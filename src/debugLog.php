@@ -2,9 +2,7 @@
 
 namespace Stephane888\Debug;
 
-use Kint\kint;
-use kint\Utils;
-use Kint\Renderer\RichRenderer;
+use Stephane888\Debug\Logger\DebugLogger;
 
 class debugLog {
   
@@ -262,10 +260,17 @@ class debugLog {
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
   
-  public static function saveLogs($data, $filename = 'debug', string $path_of_module = 'logs') {
+  public static function saveLogs($data, $filename = 'debug', string $path_of_module = 'logs', $messageError = "Une erreur s'est poduite", $subject = "Une erreur s'est poduite", $send_mail = true) {
     $use = 'log';
     $auto = false;
     self::logger($data, $filename, $auto, $use, $path_of_module);
+    // On envoit un mail.
+    if ($send_mail) {
+      $DebugLogger = new DebugLogger('debug');
+      if (is_array($data) || empty($data))
+        $data['debug_backtrace'] = debug_backtrace();
+      $DebugLogger->alert($messageError, $subject, $data, $filename);
+    }
   }
   
   public static function saveJson(array $data, $filename = 'debug', string $path_of_module = 'logs') {

@@ -12,10 +12,16 @@ use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\WebProcessor;
 use PHPMailer\PHPMailer\PHPMailer;
 use Psr\Log\LogLevel;
-use Stephane888\Debug\Logger\PHPMailerHandler;
+use Stephane888\Debug\ExceptionDebug;
 
 class DebugLogger implements DebugLoggerInterface {
   private $logger;
+  
+  /**
+   *
+   * @var \PHPMailer\PHPMailer\PHPMailer
+   */
+  protected $phpmailer = null;
   
   /**
    * The values for PHPMailer to send email via SMTP
@@ -82,20 +88,7 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function warning($message, array $contenData = [], $fileName = "warning"): void {
-    $smtpSettings = DebugLogger::$smtpSettings;
-    
-    $phpmailer = new PHPMailer();
-    $phpmailer->isSMTP();
-    $phpmailer->Host = $smtpSettings['host'];
-    $phpmailer->SMTPAuth = true;
-    $phpmailer->Port = $smtpSettings['port'];
-    $phpmailer->Username = $smtpSettings['user_name'];
-    $phpmailer->Password = $smtpSettings['password'];
-    
-    $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
-    foreach ($smtpSettings['recipients'] as $recipient) {
-      $phpmailer->addAddress($recipient);
-    }
+    $phpmailer = $this->initSenderMail($message);
     
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
@@ -114,18 +107,8 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function error($message, array $contenData = [], $fileName = "error"): void {
-    $smtpSettings = DebugLogger::$smtpSettings;
-    $phpmailer = new PHPMailer();
-    $phpmailer->isSMTP();
-    $phpmailer->Host = $smtpSettings['host'];
-    $phpmailer->SMTPAuth = true;
-    $phpmailer->Port = $smtpSettings['port'];
-    $phpmailer->Username = $smtpSettings['user_name'];
-    $phpmailer->Password = $smtpSettings['password'];
-    $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
-    foreach ($smtpSettings['recipients'] as $recipient) {
-      $phpmailer->addAddress($recipient);
-    }
+    $phpmailer = $this->initSenderMail($message);
+    
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
@@ -141,20 +124,7 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function critical($message, array $contenData = [], $fileName = "critical"): void {
-    $smtpSettings = DebugLogger::$smtpSettings;
-    
-    $phpmailer = new PHPMailer();
-    $phpmailer->isSMTP();
-    $phpmailer->Host = $smtpSettings['host'];
-    $phpmailer->SMTPAuth = true;
-    $phpmailer->Port = $smtpSettings['port'];
-    $phpmailer->Username = $smtpSettings['user_name'];
-    $phpmailer->Password = $smtpSettings['password'];
-    
-    $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
-    foreach ($smtpSettings['recipients'] as $recipient) {
-      $phpmailer->addAddress($recipient);
-    }
+    $phpmailer = $this->initSenderMail($message);
     
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
@@ -172,32 +142,16 @@ class DebugLogger implements DebugLoggerInterface {
    *
    * @inheritdoc
    */
-  public function alert($message, array $contenData = [], $fileName = "alert"): void {
-    $smtpSettings = DebugLogger::$smtpSettings;
-    
-    $phpmailer = new PHPMailer();
-    $phpmailer->isSMTP();
-    $phpmailer->Host = $smtpSettings['host'];
-    $phpmailer->SMTPAuth = true;
-    $phpmailer->Port = $smtpSettings['port'];
-    $phpmailer->Username = $smtpSettings['user_name'];
-    $phpmailer->Password = $smtpSettings['password'];
-    
-    $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
-    foreach ($smtpSettings['recipients'] as $recipient) {
-      $phpmailer->addAddress($recipient);
-    }
-    
+  public function alert($messageError, $subject, array $contenData = [], $fileName = "alert"): void {
+    $phpmailer = $this->initSenderMail($subject);
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
-    
     $handler = new PHPMailerHandler($phpmailer);
     $handler->setFormatter(new HtmlFormatter());
-    
     $this->logger->pushHandler($handler);
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
-    $this->logger->alert($message, $contenData);
+    $this->logger->alert($messageError, $contenData);
   }
   
   /**
@@ -205,20 +159,7 @@ class DebugLogger implements DebugLoggerInterface {
    * @inheritdoc
    */
   public function emergency($message, array $contenData = [], $fileName = "emergency"): void {
-    $smtpSettings = DebugLogger::$smtpSettings;
-    
-    $phpmailer = new PHPMailer();
-    $phpmailer->isSMTP();
-    $phpmailer->Host = $smtpSettings['host'];
-    $phpmailer->SMTPAuth = true;
-    $phpmailer->Port = $smtpSettings['port'];
-    $phpmailer->Username = $smtpSettings['user_name'];
-    $phpmailer->Password = $smtpSettings['password'];
-    
-    $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
-    foreach ($smtpSettings['recipients'] as $recipient) {
-      $phpmailer->addAddress($recipient);
-    }
+    $phpmailer = $this->initSenderMail($message);
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
@@ -232,15 +173,61 @@ class DebugLogger implements DebugLoggerInterface {
   }
   
   /**
+   * Permet d'envoyer un mail.
+   *
+   * @return boolean
+   */
+  public function sendMail() {
+    /**
+     *
+     * @var \PHPMailer\PHPMailer\PHPMailer $phpmailer
+     */
+    $phpmailer = $this->initSenderMail();
+    $phpmailer->Body = "Une erreur s'est produite";
+    if (!$phpmailer->send()) {
+      throw ExceptionDebug::exception($phpmailer->ErrorInfo);
+    }
+  }
+  
+  /**
+   * initialise l'envoit de mail.
+   *
+   * @param string $subject
+   * @return \PHPMailer\PHPMailer\PHPMailer
+   */
+  protected function initSenderMail($subject = 'Erreur sur un application') {
+    if (!$this->phpmailer) {
+      $smtpSettings = DebugLogger::$smtpSettings;
+      if (empty($smtpSettings['host']) || empty($smtpSettings['user_name']) || empty($smtpSettings['password']) || empty($smtpSettings['recipients']) || empty($smtpSettings['sender']))
+        throw ExceptionDebug::exception("Configuration d'envoie de mail incomplet");
+      $phpmailer = new PHPMailer();
+      $phpmailer->isSMTP();
+      $phpmailer->Host = $smtpSettings['host'];
+      $phpmailer->SMTPAuth = true;
+      $phpmailer->Port = $smtpSettings['port'];
+      $phpmailer->Username = $smtpSettings['user_name'];
+      $phpmailer->Password = $smtpSettings['password'];
+      $phpmailer->Subject = $subject;
+      
+      $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
+      foreach ($smtpSettings['recipients'] as $recipient) {
+        $phpmailer->addAddress($recipient);
+      }
+      $this->phpmailer = $phpmailer;
+    }
+    return $this->phpmailer;
+  }
+  
+  /**
    * Return the log directory.
    */
   protected function getFileDir(): string {
     if (DebugLogger::$logDir != '') {
-      return DebugLogger::$logDir;
+      return DebugLogger::$logDir . '/';
     }
     if (defined('FULLROOT_WBU')) {
       DebugLogger::$logDir = FULLROOT_WBU;
-      return DebugLogger::$logDir;
+      return DebugLogger::$logDir . '/';
     }
     return '/logs';
   }
