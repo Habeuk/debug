@@ -274,6 +274,11 @@ class debugLog {
         $data = [];
         $data['debug_backtrace'] = debug_backtrace();
       }
+      if (!is_array($data)) {
+        $data = [
+          $data
+        ];
+      }
       $DebugLogger->alert($messageError, $subject, $data, $filename);
     }
   }
