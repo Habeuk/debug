@@ -151,6 +151,11 @@ class DebugLogger implements DebugLoggerInterface {
     $handler->setFormatter(new HtmlFormatter());
     $this->logger->pushHandler($handler);
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
+    if (!is_array($messageError)) {
+      $messageError = [
+        $messageError
+      ];
+    }
     $this->logger->alert($messageError, $contenData);
   }
   
