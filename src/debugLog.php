@@ -267,8 +267,13 @@ class debugLog {
     // On envoit un mail.
     if ($send_mail) {
       $DebugLogger = new DebugLogger('debug');
-      if (is_array($data) || empty($data))
+      if (is_array($data)) {
         $data['debug_backtrace'] = debug_backtrace();
+      }
+      elseif (empty($data)) {
+        $data = [];
+        $data['debug_backtrace'] = debug_backtrace();
+      }
       $DebugLogger->alert($messageError, $subject, $data, $filename);
     }
   }
