@@ -40,6 +40,14 @@ class DebugWbu {
     // kint::createFromStatics($statics);
   }
   
+  public static function trace($max_depth = 3) {
+    RichRenderer::$theme = 'aante-light.css';
+    RichRenderer::$always_pre_render = true;
+    RichRenderer::$needs_pre_render = true;
+    kint::$depth_limit = $max_depth;
+    kint::trace();
+  }
+  
   public static function kint_bugOld($logs = '', $max_depth = 3) {
     RichRenderer::$theme = __DIR__ . '/../assets/aante-light-custom.css';
     RichRenderer::$always_pre_render = true;

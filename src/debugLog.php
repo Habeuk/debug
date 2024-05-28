@@ -137,12 +137,17 @@ class debugLog {
       $filename = $filename . '.html';
       $result = DebugWbu::Dumper3($data);
     }
+    elseif ($use == 'trace') {
+      $filename = $filename . '.html';
+      ob_start();
+      DebugWbu::trace(self::$max_depth);
+      $result = ob_get_clean();
+    }
     // use 'kint'
     else {
       $filename = $filename . '.html';
       ob_start();
       DebugWbu::kint_bug($data, self::$max_depth);
-      // DebugWbu::VarDumperBug($data);
       $result = ob_get_clean();
     }
     //
@@ -218,6 +223,15 @@ class debugLog {
     self::logger($data, $filename, $auto, $use, $path_of_module, $usePath);
   }
   
+  /**
+   * attention utilise beacoup de memoire.
+   *
+   * @param mixed $data
+   * @param string $filename
+   * @param boolean $auto
+   * @param string $path_of_module
+   * @param string $use
+   */
   public static function DebugDrupal($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs', $use = 'log') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
@@ -235,6 +249,26 @@ class debugLog {
       }
     }
     self::logger($data, $filename, $auto, $use, $path_of_module);
+  }
+  
+  public static function TraceDrupal($filename = 'trace', $auto = false, string $path_of_module = 'logs') {
+    if (empty($path_of_module)) {
+      if (self::$themeName) {
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
+      }
+      else {
+        $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
+      }
+    }
+    else {
+      if ($path_of_module[0] != "/") {
+        $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
+      }
+    }
+    $use = 'trace';
+    self::logger([], $filename, $auto, $use, $path_of_module);
   }
   
   public static function SaveLogsDrupal($data, $filename = 'debug', string $path_of_module = 'logs') {
