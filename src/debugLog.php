@@ -7,14 +7,14 @@ use kint\Utils;
 use Kint\Renderer\RichRenderer;
 
 class debugLog {
-  
+
   /**
    * le path doit etre relatif.
    *
    * @var string
    */
   public static $path = null;
-  
+
   /**
    * default value 3
    *
@@ -33,7 +33,7 @@ class debugLog {
    * @var \Drupal\Core\Extension\ExtensionPathResolver
    */
   protected static $pathResolver;
-  
+
   /**
    * Debug php files or save value on file.
    *
@@ -53,7 +53,7 @@ class debugLog {
         $filename = self::$masterFileName;
       }
     }
-    
+
     if ($auto || self::$auto) {
       $filename = $filename . rand(1, 999);
     }
@@ -67,9 +67,9 @@ class debugLog {
       $path_of_module = '/' . $path_of_module;
       $path_of_module = str_replace("//", "/", $path_of_module);
     }
-    
+
     if (!file_exists($path_of_module)) {
-      
+
       if (self::$debug)
         echo (' Dossier en cour de creation dans :' . $path_of_module);
       try {
@@ -89,7 +89,7 @@ class debugLog {
         return;
       }
     }
-    
+
     $filename = $path_of_module . '/' . $filename;
     if (!empty(self::$use)) {
       $use = self::$use;
@@ -129,7 +129,7 @@ class debugLog {
         fputs($monfichier, $result);
         fclose($monfichier);
       }
-      
+
       return true;
     }
     //
@@ -162,7 +162,7 @@ class debugLog {
       echo " file not writable : " . $filename . '<br>';
     }
   }
-  
+
   /**
    *
    * @param mixed $data
@@ -201,7 +201,7 @@ class debugLog {
     $use = 'kint';
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
-  
+
   /**
    * Methode de debogage inspirer de symfony.
    * Cette approche n'affiche pas le bloc des methodes, classes en relations
@@ -217,12 +217,39 @@ class debugLog {
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
       }
     }
+    elseif (self::get_kernel()) {
+      $path_of_module = self::get_kernel()->getProjectDir() . '/' . $path_of_module;
+    }
     $use = 'symfony';
     // $use = 'kint';
     $usePath = false;
     self::logger($data, $filename, $auto, $use, $path_of_module, $usePath);
   }
-  
+
+  public static function symfonyKintDebug($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs') {
+    if (self::get_kernel()) {
+      $path_of_module = self::get_kernel()->getProjectDir() . '/' . $path_of_module;
+    }
+    $use = 'kint';
+    // $use = 'kint';
+    $usePath = false;
+    self::logger($data, $filename, $auto, $use, $path_of_module, $usePath);
+  }
+
+  /**
+   * Recuperer le Kernel de symfony
+   *
+   * @return \App\Kernel
+   */
+  public static function get_kernel(): \App\Kernel {
+    static $kernel;
+    if (class_exists(\App\Kernel::class))
+      if (!$kernel) {
+        $kernel = new \App\Kernel($_SERVER['APP_ENV'] ?? 'dev', (bool) ($_SERVER['APP_DEBUG'] ?? true));
+      }
+    return $kernel ?? false;
+  }
+
   /**
    * attention utilise beacoup de memoire.
    *
@@ -250,7 +277,7 @@ class debugLog {
     }
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
-  
+
   public static function TraceDrupal($filename = 'trace', $auto = false, string $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
@@ -270,7 +297,7 @@ class debugLog {
     $use = 'trace';
     self::logger([], $filename, $auto, $use, $path_of_module);
   }
-  
+
   public static function SaveLogsDrupal($data, $filename = 'debug', string $path_of_module = 'logs') {
     if (empty($path_of_module)) {
       if (self::$themeName) {
@@ -295,20 +322,20 @@ class debugLog {
     $auto = false;
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
-  
+
   public static function saveLogs($data, $filename = 'debug', string $path_of_module = 'logs') {
     $use = 'log';
     $auto = false;
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
-  
+
   public static function saveJson(array $data, $filename = 'debug', string $path_of_module = 'logs') {
     $use = 'json';
     $auto = false;
     $data = \json_encode($data);
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
-  
+
   public static function savexml($data, $filename = null, $auto = false) {
     if (!$filename) {
       $filename = 'debug';
@@ -330,18 +357,17 @@ class debugLog {
           echo (' Echec creation dossier');
       }
     }
-    
+
     $filename = $path_of_module . '/files-xml/' . $filename . '.xml';
     $monfichier = fopen($filename, 'w+');
     fputs($monfichier, $data);
     fclose($monfichier);
   }
-  
+
   public static function getPath($type, $name) {
     if (!self::$pathResolver) {
       self::$pathResolver = \Drupal::service('extension.path.resolver');
     }
     return self::$pathResolver->getPath($type, $name);
   }
-  
 }
