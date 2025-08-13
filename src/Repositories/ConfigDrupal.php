@@ -51,11 +51,11 @@ class ConfigDrupal {
    * @param string $name
    * @return Array of config
    */
-  static function config(string $name) {
+  static function config(string $name, bool $strict = false) {
     $conf = self::overrideConfig([
       $name
     ]);
-    if (!isset($conf[$name])) {
+    if (!$strict && !isset($conf[$name])) {
       return self::defaultConfig($name);
     }
     return $conf[$name];
@@ -85,5 +85,4 @@ class ConfigDrupal {
     $configs = \Drupal::config($name);
     return $configs->getRawData();
   }
-  
 }
