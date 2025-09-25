@@ -260,7 +260,7 @@ class debugLog {
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
   
-  public static function saveLogs($data, $filename = 'debug', string $path_of_module = 'logs', $messageError = "Une erreur s'est poduite", $subject = "Une erreur s'est poduite", $send_mail = true) {
+  public static function saveLogs($data, $filename = 'debug', string $path_of_module = 'logs', $messageError = "Une erreur s'est poduite", $subject = "Une erreur s'est poduite", $send_mail = false) {
     $use = 'log';
     $auto = false;
     self::logger($data, $filename, $auto, $use, $path_of_module);
