@@ -16,13 +16,13 @@ use Stephane888\Debug\ExceptionDebug;
 
 class DebugLogger implements DebugLoggerInterface {
   private $logger;
-  
+
   /**
    *
    * @var \PHPMailer\PHPMailer\PHPMailer
    */
   protected $phpmailer = null;
-  
+
   /**
    * The values for PHPMailer to send email via SMTP
    * [
@@ -46,16 +46,16 @@ class DebugLogger implements DebugLoggerInterface {
     'password' => '',
     'recipients' => []
   ];
-  
+
   /**
    * The log directory path // /var/www/my-app/logs
    */
   public static $logDir = '';
-  
+
   public function __construct(string $channel) {
     $this->logger = new Logger($channel);
   }
-  
+
   /**
    *
    * @inheritdoc
@@ -64,7 +64,7 @@ class DebugLogger implements DebugLoggerInterface {
     $this->logger->pushHandler(new RotatingFileHandler($this->getFileDir() . "/$fileName.log", 7));
     $this->logger->info($message, $contenData);
   }
-  
+
   /**
    *
    * @inheritdoc
@@ -73,7 +73,7 @@ class DebugLogger implements DebugLoggerInterface {
     $this->logger->pushHandler(new RotatingFileHandler($this->getFileDir() . "/$fileName.log", 7));
     $this->logger->notice($message, $contenData);
   }
-  
+
   /**
    *
    * @inheritdoc
@@ -82,33 +82,33 @@ class DebugLogger implements DebugLoggerInterface {
     $this->logger->pushHandler(new RotatingFileHandler($this->getFileDir() . "/$fileName.log", 7));
     $this->logger->notice($message, $contenData);
   }
-  
+
   /**
    *
    * @inheritdoc
    */
   public function warning($message, array $contenData = [], $fileName = "warning"): void {
     $phpmailer = $this->initSenderMail($message);
-    
+
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
-    
+
     $handler = new PHPMailerHandler($phpmailer);
     $handler->setFormatter(new HtmlFormatter());
-    
+
     $this->logger->pushHandler($handler);
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
     $this->logger->warning($message, $contenData);
   }
-  
+
   /**
    *
    * @inheritdoc
    */
   public function error($message, array $contenData = [], $fileName = "error"): void {
     $phpmailer = $this->initSenderMail($message);
-    
+
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
@@ -118,26 +118,26 @@ class DebugLogger implements DebugLoggerInterface {
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
     $this->logger->error($message, $contenData);
   }
-  
+
   /**
    *
    * @inheritdoc
    */
   public function critical($message, array $contenData = [], $fileName = "critical"): void {
     $phpmailer = $this->initSenderMail($message);
-    
+
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
-    
+
     $handler = new PHPMailerHandler($phpmailer);
     $handler->setFormatter(new HtmlFormatter());
-    
+
     $this->logger->pushHandler($handler);
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
     $this->logger->critical($message, $contenData);
   }
-  
+
   /**
    *
    * @inheritdoc
@@ -153,7 +153,7 @@ class DebugLogger implements DebugLoggerInterface {
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
     $this->logger->alert($messageError, $contenData);
   }
-  
+
   /**
    *
    * @inheritdoc
@@ -163,32 +163,33 @@ class DebugLogger implements DebugLoggerInterface {
     $this->logger->pushProcessor(new IntrospectionProcessor());
     $this->logger->pushProcessor(new MemoryUsageProcessor());
     $this->logger->pushProcessor(new WebProcessor());
-    
+
     $handler = new PHPMailerHandler($phpmailer);
     $handler->setFormatter(new HtmlFormatter());
-    
+
     $this->logger->pushHandler($handler);
     $this->logger->pushHandler(new StreamHandler($this->getFileDir() . "$fileName.log", LogLevel::ERROR));
     $this->logger->emergency($message, $contenData);
   }
-  
+
   /**
    * Permet d'envoyer un mail.
    *
    * @return boolean
    */
-  public function sendMail() {
+  public function sendMail(string|int $subject, string|int $body) {
     /**
      *
      * @var \PHPMailer\PHPMailer\PHPMailer $phpmailer
      */
-    $phpmailer = $this->initSenderMail();
-    $phpmailer->Body = "Une erreur s'est produite";
+    $phpmailer = $this->initSenderMail($subject);
+    // $phpmailer->Body = $body;
+    $phpmailer->msgHTML($body);
     if (!$phpmailer->send()) {
       throw ExceptionDebug::exception($phpmailer->ErrorInfo);
     }
   }
-  
+
   /**
    * initialise l'envoit de mail.
    *
@@ -208,7 +209,7 @@ class DebugLogger implements DebugLoggerInterface {
       $phpmailer->Username = $smtpSettings['user_name'];
       $phpmailer->Password = $smtpSettings['password'];
       $phpmailer->Subject = $subject;
-      
+
       $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
       foreach ($smtpSettings['recipients'] as $recipient) {
         $phpmailer->addAddress($recipient);
@@ -217,7 +218,7 @@ class DebugLogger implements DebugLoggerInterface {
     }
     return $this->phpmailer;
   }
-  
+
   /**
    * Return the log directory.
    */
@@ -231,5 +232,4 @@ class DebugLogger implements DebugLoggerInterface {
     }
     return '/logs';
   }
-  
 }
