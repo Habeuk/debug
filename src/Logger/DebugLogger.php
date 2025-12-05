@@ -210,7 +210,7 @@ class DebugLogger implements DebugLoggerInterface {
       $phpmailer->Password = $smtpSettings['password'];
       $phpmailer->Subject = $subject;
 
-      $phpmailer->setFrom($smtpSettings['sender'], 'Logging Server');
+      $phpmailer->setFrom($smtpSettings['sender'], $smtpSettings['sender_name']);
       foreach ($smtpSettings['recipients'] as $recipient) {
         $phpmailer->addAddress($recipient);
       }
