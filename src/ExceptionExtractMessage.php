@@ -1,109 +1,109 @@
 <?php
-
+declare(strict_types = 1);
 namespace Stephane888\Debug;
 
-use Exception;
+final class ExceptionExtractMessage {
 
-/**
- *
- * @author stephane
- *        
- */
-class ExceptionExtractMessage {
-  
   /**
-   * Traite les message d'erreus lié à \Exception .
-   * PHP 5
+   * Compatibilité historique : extrait les détails d'une exception ou erreur PHP.
    *
-   * @param Exception $e
-   * @param Number $nbr_trace
-   *        pour limiter le nombre d'erreur à afficher.
-   * @return boolean[]|NULL[]
-   *
+   * @return array{ message: string,
+   *         code: int|string,
+   *         file: string,
+   *         line: int,
+   *         previous: \Throwable|null,
+   *         trace: array<int, array<string, mixed>>,
+   *         PHP_execution_error: bool
+   *         }
    */
-  public static function errorMessage(Exception $e, int $nbr_trace = 7) {
-    $er = [
+  public static function errorMessage(\Throwable $e, int $nbrTrace = 7): array {
+    return self::errorAll($e, $nbrTrace);
+  }
+
+  /**
+   * Compatibilité historique : extrait les détails d'une erreur PHP.
+   *
+   * @return array{ message: string,
+   *         code: int|string,
+   *         file: string,
+   *         line: int,
+   *         previous: \Throwable|null,
+   *         trace: array<int, array<string, mixed>>,
+   *         PHP_execution_error: bool
+   *         }
+   */
+  public static function errorError(\Throwable $e, int $nbrTrace = 7): array {
+    return self::errorAll($e, $nbrTrace);
+  }
+
+  /**
+   * Méthode principale : extrait les détails d'un Throwable.
+   *
+   * @return array{ message: string,
+   *         code: int|string,
+   *         file: string,
+   *         line: int,
+   *         previous: \Throwable|null,
+   *         trace: array<int, array<string, mixed>>,
+   *         PHP_execution_error: bool
+   *         }
+   */
+  public static function errorAll(\Throwable $e, int $nbrTrace = 7): array {
+    return [
       'message' => $e->getMessage(),
       'code' => $e->getCode(),
       'file' => $e->getFile(),
       'line' => $e->getLine(),
       'previous' => $e->getPrevious(),
-      'trace' => array_slice($e->getTrace(), 0, 3),
+      'trace' => self::extractTrace($e, $nbrTrace),
       'PHP_execution_error' => true
     ];
-    if ($nbr_trace)
-      $er['trace'] = array_slice($e->getTrace(), 0, $nbr_trace);
-    else
-      $er['trace'] = $e->getTrace();
-    return $er;
   }
-  
-  /**
-   * Traite les message d'erreus lié à \Error.
-   * PHP 5
-   *
-   * @param Exception $e
-   * @param Number $nbr_trace
-   *        pour limiter le nombre d'erreur à afficher.
-   * @return boolean[]|NULL[]
-   */
-  public static function errorError(\Error $e, int $nbr_trace = 7) {
-    $er = [
-      'message' => $e->getMessage(),
-      'code' => $e->getCode(),
-      'file' => $e->getFile(),
-      'line' => $e->getLine(),
-      'previous' => $e->getPrevious(),
-      'trace' => array_slice($e->getTrace(), 0, 3),
-      'PHP_execution_error' => true
+
+  public static function errorAllToString(\Throwable $e, int $nbrTrace = 7): string {
+    $error = self::errorAll($e, $nbrTrace);
+
+    $lines = [
+      $error['message'],
+      (string) $error['code'],
+      $error['file'],
+      (string) $error['line']
     ];
-    if ($nbr_trace)
-      $er['trace'] = array_slice($e->getTrace(), 0, $nbr_trace);
-    else
-      $er['trace'] = $e->getTrace();
-    return $er;
-  }
-  
-  /**
-   * Traite les message d'erreus lié à \Error.
-   * PHP 5
-   *
-   * @param Exception $e
-   * @param Number $nbr_trace
-   *        pour limiter le nombre d'erreur à afficher.
-   * @return [] contenant les informations liées à l'erreur.
-   */
-  public static function errorAll(\Throwable $e, int $nbr_trace = 7) {
-    $er = [
-      'message' => $e->getMessage(),
-      'code' => $e->getCode(),
-      'file' => $e->getFile(),
-      'line' => $e->getLine(),
-      'previous' => $e->getPrevious(),
-      'trace' => array_slice($e->getTrace(), 0, $nbr_trace),
-      'PHP_execution_error' => true
-    ];
-    return $er;
-  }
-  
-  public static function errorAllToString(\Throwable $e, int $nbr_trace = 7) {
-    $error = '';
-    $error .= '<br>';
-    $error .= $e->getMessage();
-    $error .= '<br>';
-    $error .= $e->getCode();
-    $error .= '<br>';
-    $error .= $e->getFile();
-    $error .= '<br>';
-    $error .= $e->getLine();
-    $error .= '<br>';
-    $error .= $e->getPrevious();
-    foreach (array_slice($e->getTrace(), 0, $nbr_trace) as $value) {
-      $error .= '<br>';
-      if (!is_array($value) && !is_object($value))
-        $error .= $value;
+
+    if ($error['previous'] instanceof \Throwable) {
+      $lines[] = $error['previous']->getMessage();
     }
-    return $error;
+
+    foreach ($error['trace'] as $trace) {
+      $lines[] = self::traceToString($trace);
+    }
+
+    return implode('<br>', array_filter($lines, static fn (string $line): bool => $line !== ''));
   }
-  
+
+  /**
+   *
+   * @return array<int, array<string, mixed>>
+   */
+  private static function extractTrace(\Throwable $e, int $nbrTrace): array {
+    if ($nbrTrace <= 0) {
+      return $e->getTrace();
+    }
+
+    return array_slice($e->getTrace(), 0, $nbrTrace);
+  }
+
+  /**
+   *
+   * @param array<string, mixed> $trace
+   */
+  private static function traceToString(array $trace): string {
+    $file = isset($trace['file']) && is_string($trace['file']) ? $trace['file'] : '[internal]';
+
+    $line = isset($trace['line']) && is_int($trace['line']) ? (string) $trace['line'] : '0';
+
+    $function = isset($trace['function']) && is_string($trace['function']) ? $trace['function'] : '';
+
+    return sprintf('%s:%s %s()', $file, $line, $function);
+  }
 }
