@@ -3,9 +3,9 @@ namespace Stephane888\Debug\Mysql;
 
 class DebugErrors {
 
-  protected $codeError;
+  protected int|string $codeError = 400;
 
-  protected $message;
+  protected string $message = '';
 
   const codeDuplicate = 23000;
 
@@ -14,12 +14,11 @@ class DebugErrors {
   /**
    * Recherche une expression dans la chaine d'erreur.
    *
-   * @param string $string
-   * @return boolean // retourne true en cas d'erreur
+   * @param array<mixed> $error
+   * @return bool
    */
-  public function analyseError($error)
-  {
-    if (\is_array($error) && ! empty($error['PHP_execution_error'])) {
+  public function analyseError(array $error): bool {
+    if (isset($error['PHP_execution_error']) && $error['PHP_execution_error'] === true) {
       $this->codeError = $error['code'];
       $this->message = $error['message'];
       return true;
@@ -27,20 +26,14 @@ class DebugErrors {
     return false;
   }
 
-  public function getCustomMessage()
-  {
+  public function getCustomMessage(): string|int {
     switch ($this->codeError) {
       case self::codeDuplicate:
         return ErrorsMessages::$code_23000;
-        break;
       case self::codeDefaultValue:
         return ErrorsMessages::$code_HY000;
-        break;
-
       default:
         return ErrorsMessages::$code_empty . '. Mysql code : ' . $this->codeError;
-        break;
     }
   }
 }
-//"SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '10-MCTCRECG' for key 'PRIMARY'"

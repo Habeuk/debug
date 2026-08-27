@@ -1,17 +1,16 @@
 <?php
-
 namespace Stephane888\Debug\Repositories;
 
 class Utility {
-  
+
   /**
    * Permet de retourner le chemin vers la home.
    */
-  static public function getHomeDirectory() {
+  static public function getHomeDirectory(): string {
     /**
      * $_SERVER['HOME']est present sur certains serveurs.
      */
-    if (!empty($_SERVER['HOME'])) {
+    if (isset($_SERVER['HOME']) && $_SERVER['HOME'] !== '') {
       return $_SERVER['HOME'];
     }
     /**
@@ -19,7 +18,7 @@ class Utility {
      * On par du principe que le dossier en dessous du premier dossier
      * ($_SERVER['DOCUMENT_ROOT']) est probrablement le bon.
      */
-    elseif (!empty($_SERVER['DOCUMENT_ROOT'])) {
+    elseif (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'] !== '') {
       $dossierName = explode("/", $_SERVER['DOCUMENT_ROOT']);
       if (count($dossierName) > 3) {
         // $dossierName['0'] is empty
@@ -28,5 +27,4 @@ class Utility {
     }
     throw new \Exception(" Impossible de determiner le dossier home ");
   }
-  
 }

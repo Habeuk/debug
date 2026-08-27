@@ -1,73 +1,77 @@
 <?php
-
 namespace Stephane888\Debug\Logger;
 
+Interface DebugLoggerInterface {
 
-Interface DebugLoggerInterface
-{
+  /**
+   * Add debug information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function debug(string|\Stringable $message, array $contenData = [], $fileName = ''): void;
 
+  /**
+   * Add info information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function info(string|\Stringable $message, array $contenData = [], $fileName = "info"): void;
 
-    /**
-     * Add debug information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function debug($message, array $contenData = [], $fileName = '');
+  /**
+   * Add notice information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function notice(string|\Stringable $message, array $contenData = [], $fileName = "notice"): void;
 
-    /**
-     * Add info information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function info($message, array $contenData = [], $fileName = "info");
+  /**
+   * Add warning information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function warning(string|\Stringable $message, array $contenData = [], $fileName = "warning"): void;
 
-    /**
-     * Add notice information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function notice($message, array $contenData = [], $fileName = "notice");
+  /**
+   * Add error information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function error(string|\Stringable $message, array $contenData = [], $fileName = "error"): void;
 
-    /**
-     * Add warning information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function warning($message, array $contenData = [], $fileName = "warning");
+  /**
+   * Add critical information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function critical(string|\Stringable $message, array $contenData = [], $fileName = "critical"): void;
 
-    /**
-     * Add error information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function error($message, array $contenData = [], $fileName = "error");
+  /**
+   * Add alert information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function alert(string|\Stringable $message, array $contenData = [], $fileName = "alert"): void;
 
-    /**
-     * Add critical information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function critical($message, array $contenData = [], $fileName = "critical");
-
-    /**
-     * Add alert information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function alert($message, array $contenData = [], $fileName = "alert");
-
-    /**
-     * Add emergency information to a log file
-     * @param string $message The message to write in the log file
-     * @param array $contenData The context you want to add in the log (eg: an array of data)
-     * @param string $fileName The name of the log file
-     */
-    public function emergency($message, array $contenData = [], $fileName = "emergency");
+  /**
+   * Add emergency information to a log file
+   *
+   * @param string|\Stringable $message The message to write in the log file
+   * @param array<mixed> $contenData The context you want to add in the log (eg: an array of data)
+   * @param string $fileName The name of the log file
+   */
+  public function emergency(string|\Stringable $message, array $contenData = [], $fileName = "emergency"): void;
 }
