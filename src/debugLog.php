@@ -1,10 +1,7 @@
 <?php
-
 namespace Stephane888\Debug;
 
-use Kint\kint;
-use kint\Utils;
-use Kint\Renderer\RichRenderer;
+use Drupal\Core\Extension\ExtensionPathResolver;
 
 class debugLog {
 
@@ -13,26 +10,34 @@ class debugLog {
    *
    * @var string
    */
-  public static $path = null;
+  public static ?string $path = null;
 
   /**
    * default value 3
    *
    * @var integer
    */
-  public static $max_depth = 3;
-  public static $auto = false;
-  public static $use = null;
-  public static $forcePath = false;
-  public static $PositionAddLogAfter = true;
-  public static $masterFileName = null;
-  public static $themeName = null;
-  public static $debug = true;
+  public static int $max_depth = 3;
+
+  public static bool $auto = false;
+
+  public static ?string $use = null;
+
+  public static bool $forcePath = false;
+
+  public static bool $PositionAddLogAfter = true;
+
+  public static ?string $masterFileName = null;
+
+  public static ?string $themeName = null;
+
+  public static bool $debug = true;
+
   /**
    *
-   * @var \Drupal\Core\Extension\ExtensionPathResolver
+   * @phpstan-ignore-next-line
    */
-  protected static $pathResolver;
+  protected static ?ExtensionPathResolver $pathResolver = null;
 
   /**
    * Debug php files or save value on file.
@@ -41,15 +46,14 @@ class debugLog {
    * @param string $filename
    * @param string $use
    * @param string $path_of_module
-   * @param boolean $auto
-   *        genere un code aleatoire pour chaque fichier.
-   * @param boolean $usePath
-   *        true on utilise le chemain definie dans le path.
+   * @param boolean $auto genere un code aleatoire pour chaque fichier.
+   * @param boolean $usePath true on utilise le chemain definie dans le path.
    */
-  public static function logger($data, $filename = null, $auto = FALSE, $use = 'kint', string $path_of_module = 'logs', $usePath = false) {
-    if (!$filename) {
+  public static function logger(mixed $data, ?string $filename = null, bool $auto = FALSE, string $use = 'kint', string $path_of_module = 'logs',
+    bool $usePath = false): void {
+    if ($filename === null) {
       $filename = 'debug';
-      if (self::$masterFileName) {
+      if (self::$masterFileName !== null) {
         $filename = self::$masterFileName;
       }
     }
@@ -57,18 +61,18 @@ class debugLog {
     if ($auto || self::$auto) {
       $filename = $filename . rand(1, 999);
     }
-    if (!empty(self::$path)) {
+    if (self::$path !== null) {
       $path_of_module = self::$path;
     }
-    if (defined('FULLROOT_WBU') && !self::$forcePath && !$usePath) {
+    if (defined('FULLROOT_WBU') && ! self::$forcePath && ! $usePath) {
       $path_of_module = FULLROOT_WBU . '/' . $path_of_module;
     }
-    elseif (!$usePath) {
+    elseif (! $usePath) {
       $path_of_module = '/' . $path_of_module;
       $path_of_module = str_replace("//", "/", $path_of_module);
     }
 
-    if (!file_exists($path_of_module)) {
+    if (! file_exists($path_of_module)) {
 
       if (self::$debug)
         echo (' Dossier en cour de creation dans :' . $path_of_module);
@@ -91,21 +95,21 @@ class debugLog {
     }
 
     $filename = $path_of_module . '/' . $filename;
-    if (!empty(self::$use)) {
+    if (self::$use !== null) {
       $use = self::$use;
     }
     // Traitement des données.
-    if ($use == 'file') {
+    if ($use === 'file') {
       if (is_array($data) || is_object($data)) {
         $data = json_encode($data);
       }
       $result = $data;
     } //
-    elseif ($use == 'json') {
+    elseif ($use === 'json') {
       $filename = $filename . '.json';
       $result = $data;
     } //
-    elseif ($use == 'log') {
+    elseif ($use === 'log') {
       if (is_array($data) || is_object($data)) {
         ob_start();
         print_r($data);
@@ -125,19 +129,17 @@ class debugLog {
         }
         $monfichier = fopen($filename, "w");
       }
-      if ($result !== Null && $monfichier) {
+      if ($monfichier !== false) {
         fputs($monfichier, $result);
         fclose($monfichier);
       }
-
-      return true;
     }
     //
-    elseif ($use == 'symfony') {
+    elseif ($use === 'symfony') {
       $filename = $filename . '.html';
       $result = DebugWbu::Dumper3($data);
     }
-    elseif ($use == 'trace') {
+    elseif ($use === 'trace') {
       $filename = $filename . '.html';
       ob_start();
       DebugWbu::trace(self::$max_depth);
@@ -152,8 +154,8 @@ class debugLog {
     }
     //
     $monfichier = fopen($filename, 'w+');
-    if ($monfichier) {
-      if ($result !== Null && $monfichier) {
+    if ($monfichier !== false) {
+      if ($result !== false) {
         fwrite($monfichier, $result);
         fclose($monfichier);
       }
@@ -168,18 +170,21 @@ class debugLog {
    * @param mixed $data
    * @param string $filename
    * @param Boolean $auto
-   * @param string $path_of_module
-   *        Un chemin relatif serra dans le theme ou un chemin absolute
+   * @param string $path_of_module Un chemin relatif serra dans le theme ou un chemin absolute
    */
-  public static function kintDebugDrupal($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs') {
-    if (empty($path_of_module)) {
+  public static function kintDebugDrupal(mixed $data, string $filename = 'debug', bool $auto = false, ?string $path_of_module = 'logs'): void {
+    if ($path_of_module === null) {
       // si on est dans un environnement drupal, on renvoit cela dans le theme
       // encours.
       if (defined('DRUPAL_ROOT')) {
-        if (self::$themeName) {
+        if (self::$themeName !== null) {
           $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
         }
         else {
+          /**
+           *
+           * @phpstan-ignore-next-line
+           */
           $defaultThemeName = \Drupal::config('system.theme')->get('default');
           $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
         }
@@ -189,10 +194,14 @@ class debugLog {
       // si on est dans un environnement drupal, on renvoit cela dans le theme
       // encours.
       if (defined('DRUPAL_ROOT')) {
-        if (self::$themeName) {
+        if (self::$themeName !== null) {
           $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName) . "/" . $path_of_module;
         }
         else {
+          /**
+           *
+           * @phpstan-ignore-next-line
+           */
           $defaultThemeName = \Drupal::config('system.theme')->get('default');
           $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
         }
@@ -207,17 +216,21 @@ class debugLog {
    * Cette approche n'affiche pas le bloc des methodes, classes en relations
    * avec l'object.
    */
-  public static function symfonyDebug($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs') {
+  public static function symfonyDebug(mixed $data, string $filename = 'debug', bool $auto = false, string $path_of_module = 'logs'): void {
     if (defined('DRUPAL_ROOT')) {
-      if (self::$themeName) {
+      if (self::$themeName !== null) {
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName) . "/" . $path_of_module;
       }
       else {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
       }
     }
-    elseif (self::get_kernel()) {
+    elseif (self::get_kernel() !== false) {
       $path_of_module = self::get_kernel()->getProjectDir() . '/' . $path_of_module;
     }
     $use = 'symfony';
@@ -226,8 +239,8 @@ class debugLog {
     self::logger($data, $filename, $auto, $use, $path_of_module, $usePath);
   }
 
-  public static function symfonyKintDebug($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs') {
-    if (self::get_kernel()) {
+  public static function symfonyKintDebug(mixed $data, string $filename = 'debug', bool $auto = false, string $path_of_module = 'logs'): void {
+    if (self::get_kernel() !== false) {
       $path_of_module = self::get_kernel()->getProjectDir() . '/' . $path_of_module;
     }
     $use = 'kint';
@@ -241,10 +254,10 @@ class debugLog {
    *
    * @return \App\Kernel
    */
-  public static function get_kernel(): \App\Kernel {
+  public static function get_kernel(): \App\Kernel|false {
     static $kernel;
     if (class_exists(\App\Kernel::class))
-      if (!$kernel) {
+      if (! $kernel) {
         $kernel = new \App\Kernel($_SERVER['APP_ENV'] ?? 'dev', (bool) ($_SERVER['APP_DEBUG'] ?? true));
       }
     return $kernel ?? false;
@@ -259,38 +272,78 @@ class debugLog {
    * @param string $path_of_module
    * @param string $use
    */
-  public static function DebugDrupal($data, $filename = 'debug', $auto = false, string $path_of_module = 'logs', $use = 'log') {
-    if (empty($path_of_module)) {
-      if (self::$themeName) {
+  public static function DebugDrupal(mixed $data, string $filename = 'debug', bool $auto = false, ?string $path_of_module = 'logs', string $use = 'log'): void {
+    if ($path_of_module === null) {
+      if (self::$themeName === null) {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
       }
       else {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
       }
     }
     else {
-      if ($path_of_module[0] != "/") {
+      if ($path_of_module[0] !== "/") {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
       }
     }
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
 
-  public static function TraceDrupal($filename = 'trace', $auto = false, string $path_of_module = 'logs') {
-    if (empty($path_of_module)) {
-      if (self::$themeName) {
+  public static function TraceDrupal(string $filename = 'trace', bool $auto = false, ?string $path_of_module = 'logs'): void {
+    if ($path_of_module === null) {
+      if (self::$themeName !== null) {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
       }
       else {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
       }
     }
     else {
-      if ($path_of_module[0] != "/") {
+      if ($path_of_module[0] !== "/") {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
       }
     }
@@ -298,21 +351,43 @@ class debugLog {
     self::logger([], $filename, $auto, $use, $path_of_module);
   }
 
-  public static function SaveLogsDrupal($data, $filename = 'debug', string $path_of_module = 'logs') {
-    if (empty($path_of_module)) {
-      if (self::$themeName) {
+  /**
+   *
+   * @param mixed $data
+   * @param string $filename
+   * @param string $path_of_module
+   */
+  public static function SaveLogsDrupal(mixed $data, string $filename = 'debug', ?string $path_of_module = 'logs'): void {
+    if ($path_of_module === null) {
+      if (self::$themeName !== null) {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', self::$themeName);
       }
       else {
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $defaultThemeName = \Drupal::config('system.theme')->get('default');
+        /**
+         *
+         * @phpstan-ignore-next-line
+         */
         $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName);
       }
     }
     else {
-      // si on est dans un environnement drupal, on renvoit cela dans le theme
+      // Si on est dans un environnement drupal, on renvoit cela dans le theme
       // encours.
       if (defined('DRUPAL_ROOT')) {
-        if ($path_of_module[0] != "/") {
+        if ($path_of_module[0] !== "/") {
+          /**
+           *
+           * @phpstan-ignore-next-line
+           */
           $defaultThemeName = \Drupal::config('system.theme')->get('default');
           $path_of_module = DRUPAL_ROOT . '/' . self::getPath('theme', $defaultThemeName) . "/" . $path_of_module;
         }
@@ -323,32 +398,41 @@ class debugLog {
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
 
-  public static function saveLogs($data, $filename = 'debug', string $path_of_module = 'logs') {
+  public static function saveLogs(mixed $data, string $filename = 'debug', string $path_of_module = 'logs'): void {
     $use = 'log';
     $auto = false;
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
 
-  public static function saveJson(array $data, $filename = 'debug', string $path_of_module = 'logs') {
+  /**
+   *
+   * @param array<mixed> $data
+   * @param string $filename
+   * @param string $path_of_module
+   */
+  public static function saveJson(array $data, string $filename = 'debug', string $path_of_module = 'logs'): void {
     $use = 'json';
     $auto = false;
     $data = \json_encode($data);
     self::logger($data, $filename, $auto, $use, $path_of_module);
   }
 
-  public static function savexml($data, $filename = null, $auto = false) {
-    if (!$filename) {
+  public static function savexml(mixed $data, ?string $filename = null, bool $auto = false): void {
+    if ($filename === null) {
       $filename = 'debug';
     }
     if ($auto) {
       $filename = $filename . rand(1, 999);
     }
     $path_of_module = 'api/src/logs';
-    $path_of_module = FULLROOT_WBU . '/' . $path_of_module;
-    if (!file_exists($path_of_module . '/files-xml')) {
+    if (defined('FULLROOT_WBU'))
+      $path_of_module = FULLROOT_WBU . '/' . $path_of_module;
+    if (! file_exists($path_of_module . '/files-xml')) {
       if (self::$debug)
         echo ('dossier en cour de creation dans :' . $path_of_module);
-      if (mkdir($path_of_module . '/files-log', $mode = '0755', $recursive = TRUE)) {
+      $mode = 0755;
+      $recursive = TRUE;
+      if (mkdir($path_of_module . '/files-log', $mode, $recursive)) {
         if (self::$debug)
           echo (' Dossier OK ');
       }
@@ -357,17 +441,30 @@ class debugLog {
           echo (' Echec creation dossier');
       }
     }
-
     $filename = $path_of_module . '/files-xml/' . $filename . '.xml';
     $monfichier = fopen($filename, 'w+');
-    fputs($monfichier, $data);
-    fclose($monfichier);
+    if ($monfichier !== false) {
+      fputs($monfichier, $data);
+      fclose($monfichier);
+    }
   }
 
-  public static function getPath($type, $name) {
-    if (!self::$pathResolver) {
+  /**
+   *
+   * @phpstan-ignore-next-line
+   */
+  public static function getPath(string $type, string $name): ExtensionPathResolver {
+    if (self::$pathResolver === null) {
+      /**
+       *
+       * @phpstan-ignore-next-line
+       */
       self::$pathResolver = \Drupal::service('extension.path.resolver');
     }
+    /**
+     *
+     * @phpstan-ignore-next-line
+     */
     return self::$pathResolver->getPath($type, $name);
   }
 }

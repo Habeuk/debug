@@ -1,10 +1,8 @@
 <?php
-
 namespace Stephane888\Debug;
 
-use Kint\kint;
+use Kint\Kint as kint;
 use Kint\Renderer\RichRenderer;
-//
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
@@ -26,11 +24,11 @@ use Symfony\Component\VarDumper\VarDumper;
 /**
  *
  * @author stephane
- *        
+ *
  */
 class DebugWbu {
-  
-  public static function kint_bug($logs = '', $max_depth = 3) {
+
+  public static function kint_bug(mixed $logs = '', int $max_depth = 3): void {
     RichRenderer::$theme = 'aante-light.css';
     RichRenderer::$always_pre_render = true;
     RichRenderer::$needs_pre_render = true;
@@ -39,16 +37,16 @@ class DebugWbu {
     // $statics = kint::getStatics();
     // kint::createFromStatics($statics);
   }
-  
-  public static function trace($max_depth = 3) {
+
+  public static function trace(int $max_depth = 3): void {
     RichRenderer::$theme = 'aante-light.css';
     RichRenderer::$always_pre_render = true;
     RichRenderer::$needs_pre_render = true;
     kint::$depth_limit = $max_depth;
     kint::trace();
   }
-  
-  public static function kint_bugOld($logs = '', $max_depth = 3) {
+
+  public static function kint_bugOld(mixed $logs = '', int $max_depth = 3): void {
     RichRenderer::$theme = __DIR__ . '/../assets/aante-light-custom.css';
     RichRenderer::$always_pre_render = true;
     RichRenderer::$needs_pre_render = true;
@@ -57,42 +55,41 @@ class DebugWbu {
     // $statics = kint::getStatics();
     // kint::createFromStatics($statics);
   }
-  
-  public static function VarDumperBug($var = '') {
+
+  public static function VarDumperBug(mixed $var = ''): void {
     VarDumper::dump($var);
   }
-  
+
   /**
    *
    * @see https://symfony.com/doc/current/components/var_dumper/advanced.html
    * @param mixed $var
    */
-  public static function CustomVarDumper($var) {
+  public static function CustomVarDumper(mixed $var): void {
     VarDumper::setHandler(function ($var) {
       $cloner = new VarCloner();
       $dumper = 'cli' === PHP_SAPI ? new CliDumper() : new HtmlDumper();
       $dumper->dump($cloner->cloneVar($var));
     });
   }
-  
-  public static function Dumper2($variable) {
+
+  public static function Dumper2(mixed $variable): ?string {
     $cloner = new VarCloner();
     $dumper = new CliDumper();
     return $dumper->dump($cloner->cloneVar($variable), true);
   }
-  
+
   /**
    *
    * @param mixed $variable
    */
-  public static function Dumper3($variable, $max_depth = 3, $maxStringLength = 160) {
+  public static function Dumper3(mixed $variable, int $max_depth = 3, int $maxStringLength = 160): ?string {
     $dumper = new HtmlDumper();
     $cloner = new VarCloner();
     return $dumper->dump($cloner->cloneVar($variable), true, [
-      // 1 and 160 are the default values for these options
+      // 1 and 160 are the default values for these options.
       'maxDepth' => $max_depth,
       'maxStringLength' => $maxStringLength
     ]);
   }
-  
 }
